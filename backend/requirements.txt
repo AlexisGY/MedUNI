@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+python-multipart
+asyncpg   # si usarán PostgreSQL
+sqlalchemy
+psycopg2-binary  # driver clásico para PostgreSQL

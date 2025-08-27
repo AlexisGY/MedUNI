@@ -1,0 +1,8 @@
+:root {
+  --color-primary: #800000;    /* Primary */
+  --color-surface: #FFFFFF;    /* Surface */
+  --color-surface-alt: #F5F5F5;/* Surface Alternativo */
+  --color-text: #1F2937;       /* Text */
+  --color-border: #E5E7EB;     /* Border */
+  --color-success: #10B981;    /* Surcces*/
+}
