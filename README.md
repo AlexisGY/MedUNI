@@ -7,7 +7,7 @@ cd backend
 python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
-python -m uvicorn main:app --reload
+python -m uvicorn app.main:app --reload
 
 #Frontend
 # cd frontend
