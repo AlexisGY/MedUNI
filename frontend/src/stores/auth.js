@@ -10,10 +10,11 @@ export const useAuth = defineStore('auth', {
   }),
   getters: { isAuth: (s) => !!s.token },
   actions: {
-    async login(email, password) {
+    async login(username, password) { // Cambiado de 'email' a 'codigo'
       this.loading = true; this.error = null
       try {
-        const { token, user } = await api.login({ email, password })
+        // Envia el 'codigo' y 'password' a la API
+        const { token, user } = await api.login({ username, password })
         this.token = token; this.user = user
         localStorage.setItem('token', token)
         localStorage.setItem('user', JSON.stringify(user))

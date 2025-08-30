@@ -23,4 +23,6 @@ router.beforeEach((to) => {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 })
+
+
 export default router

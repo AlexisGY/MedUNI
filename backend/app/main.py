@@ -28,24 +28,8 @@ def root():
     else:
         return {"status": "error", "message": "No se pudo conectar a la base de datos"}
 
-@app.post("/auth/login")
-async def login(data: dict):
-    email = data.get("email"); password = data.get("password")
-    if not email or not password:
-        raise HTTPException(status_code=400, detail="Faltan credenciales")
-    # demo: acepta cualquier cosa no vacía
-    return {"token": "demo-token", "user": {"email": email, "nombre": "Estudiante UNI"}}
 
-@app.get("/especialidades")
-async def especialidades():
-    return ["Odontología","Medicina General","Psicología"]
-
-@app.get("/horarios")
-async def horarios(especialidad: str, fecha: str):
-    base = ["08:00","08:30","09:00","09:30","10:00","10:30"]
-    return [{"hora": h, "ocupado": (especialidad=="Odontología" and i%2==0)} for i,h in enumerate(base)]
-
-# uvicorn main:app --reload     -- Correr backend 
+# uvicorn app.main:app --reload     -- Correr backend 
 # npm run dev                   -- Correr frontend 
 
 

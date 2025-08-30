@@ -1,4 +1,4 @@
-from ..db import get_connection  # tu conexión psycopg
+from app.db import get_connection  # tu conexión psycopg
 
 def login_user(username: str, password: str):
     conn = get_connection()

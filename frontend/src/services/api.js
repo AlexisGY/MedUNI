@@ -10,15 +10,16 @@ async function http(path, opts = {}) {
   return res.json()
 }
 
-/* ---------- AUTH ---------- */
-export async function login({ email, password }) {
-  if (USE_MOCK) {
-    if (!email || !password) throw new Error('Completa tus credenciales')
-    return { token: 'mock-token', user: { email, nombre: 'Estudiante UNI' } }
-  }
-  return http('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) })
-}
 
+/* ---------- AUTH ---------- */
+export async function login({ username, password }) {
+  // Asegúrate de que el nombre de la variable en el cuerpo de la petición
+  // coincida con lo que tu backend espera
+  return http('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  });
+}
 /* ---------- CATÁLOGOS ---------- */
 export async function listarEspecialidades() {
   if (USE_MOCK) return ['Odontología','Medicina General','Psicología']
