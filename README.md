@@ -13,3 +13,4 @@ python -m uvicorn app.main:app --reload
 # cd frontend
 # npm install
 # npm run dev
+#npm install dayjs
