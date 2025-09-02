@@ -6,8 +6,21 @@ async function http(path, opts = {}) {
     headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
     ...opts,
   })
-  if (!res.ok) throw new Error(await res.text() || 'Error de servidor')
-  return res.json()
+
+  const raw = await res.text() // leemos una sola vez
+  // Intentamos parsear (si es JSON válido)
+  let data = null
+  if (raw) {
+    try { data = JSON.parse(raw) } catch { /* texto plano */ }
+  }
+
+  if (!res.ok) {
+    const msg = (data && (data.detail || data.message || data.error)) || raw || 'Error de servidor'
+    throw new Error(msg)
+  }
+
+  // Éxito: si no había cuerpo devolvemos null
+  return data
 }
 
 
