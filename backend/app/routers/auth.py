@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
-from app.schemas.user import UserLogin
-from app.services.user_service import login_user
+from fastapi import APIRouter, HTTPException, status
+from app.schemas.user import UserLogin, AuthenticatedUser
+from app.services.user_service import login_user, get_me
 import secrets, time
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
 
 @router.post("/login")
 def login(data: UserLogin):
@@ -17,3 +18,20 @@ def login(data: UserLogin):
             "token": fake_token,
         }
     raise HTTPException(status_code=401, detail="Credenciales inválidas")
+
+@router.post("/me", response_model = AuthenticatedUser)
+def me():
+    user_data = get_me()
+    if user_data:
+        return {
+            "id" : user_data["id"],
+            "nombres": user_data["nombres"] , # Return the full user data here
+            "apellidos": user_data["apellidos"],
+            "correo": user_data["correo"],
+            "cod_estudiante": user_data["cod_estudiante"]
+     }
+    
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="❌ Credenciales inválidas"
+    )

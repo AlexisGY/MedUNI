@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth
+from app.routers import auth, citas_router
 from app.db import get_connection
 
 # routers 
@@ -14,6 +14,7 @@ app.add_middleware(
 )
 # routers 
 app.include_router(auth.router)
+app.include_router(citas_router.router)
 
 # Verificando la conexión a la base de datos al iniciar la app
 @app.get("/")
