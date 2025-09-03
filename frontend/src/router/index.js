@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView      from '../views/LoginView.vue'
 import ReservarView   from '../views/ReservarView.vue'
 import CalendarView   from '../views/CalendarView.vue'
-
+// ESPECIALIDADES
+import EspecialidadesView from '../views/EspecialidadesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +11,10 @@ const router = createRouter({
   { path: '/', redirect: { name: 'login' } },
   { path: '/login',     name: 'login',    component: LoginView },
     { path: '/reservar',  name: 'reservar', component: ReservarView, meta: { requiresAuth: true } },
-    { path: '/calendario',name: 'calendar', component: CalendarView, meta: { requiresAuth: true } }, // 👈 nuevo
+    { path: '/calendario',name: 'calendar', component: CalendarView, meta: { requiresAuth: true } }, 
+    // ESPECIALIDADES ROUTER
+    { path: '/especialidades',name: 'especialidades', component: EspecialidadesView, meta: { requiresAuth: true } },
+    // 👈 nuevo
     { path: '/about', redirect: '/login' },
     { path: '/:pathMatch(.*)*', component: { template: '<div class="p-3">404</div>' } },
   ],
