@@ -13,3 +13,4 @@ __pycache__/
 # Archivos de sistema
 .DS_Store
 Thumbs.db
+backend/app/__pycache__/main.cpython-311.pyc
