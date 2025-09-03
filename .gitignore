@@ -1,8 +1,6 @@
 # Entornos virtuales
 venv/
 backend/venv/
-.env
-*.env
 
 node_modules/
 frontend/node_modules/
