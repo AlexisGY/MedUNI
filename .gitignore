@@ -1,0 +1,15 @@
+# Entornos virtuales
+venv/
+backend/venv/
+
+node_modules/
+frontend/node_modules/
+dist/
+
+# Archivos de Python
+__pycache__/
+*.pyc
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
