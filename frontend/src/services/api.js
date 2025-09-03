@@ -38,7 +38,16 @@ export async function listarEspecialidades() {
   if (USE_MOCK) return ['Odontología','Medicina General','Psicología']
   return http('/especialidades')
 }
+// ESPECIALIDADES JHARO BACKEND
+export async function fetchEspecialidades() {
+  return http('/especialidades'); // devuelve [{ id, nombre, estado }]
+}
 
+// MEDICOS JHARO BACKEND
+export async function fetchMedicosPorEspecialidad(idEspecialidad) {
+  return http(`/medicos/especialidad/${idEspecialidad}`);
+}
+// OTROS ALEXIS
 export async function listarHorarios({ especialidad, fecha }) {
   if (USE_MOCK) {
     const base = ['08:00','08:30','09:00','09:30','10:00','10:30']
