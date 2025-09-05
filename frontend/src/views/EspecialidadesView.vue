@@ -68,6 +68,12 @@
 import { ref, computed, onMounted } from "vue";
 import EspecialidadCard from "@/components/EspecialidadCard.vue";
 import { fetchEspecialidades } from "@/services/api";
+import { useRouter } from "vue-router";
+import { useCitaStore } from "@/stores/reserva_cita";
+
+const citaStore = useCitaStore(); // CITA STORE
+
+const router = useRouter();
 
 const especialidades = ref([]);
 const search = ref("");
@@ -104,6 +110,8 @@ const especialidadesFiltradas = computed(() => {
 
 // Acción al presionar "Ver horarios"
 function verHorarios(esp) {
-  alert(`Ver horarios de ${esp.nombre}`);
+// Usamos el ID de la especialidad para redirigir a la ruta de disponibilidad
+  citaStore.setEspecialidad(esp.id);
+  router.push({ name: 'disponibilidad', params: { especialidadId: esp.id } });
 }
 </script>

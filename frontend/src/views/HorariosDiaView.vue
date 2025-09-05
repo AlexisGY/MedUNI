@@ -1,30 +1,29 @@
 <script setup>
 import { useRouter } from 'vue-router'
-const router = useRouter()
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted } from "vue";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/es";
 import uniLogo from "../assets/logo-uni.png";
+import { fetchDiasDisponibles } from "@/services/api"
 
 import { useCitaStore } from "@/stores/reserva_cita";
 const citaStore = useCitaStore(); // CITA STORE
- // ID del estudiante logueado
 
 dayjs.extend(isoWeek);
 dayjs.locale("es");
 
 const today = dayjs();
+
+const router = useRouter();
+
 const state = reactive({
   mode: "month",                      // "week" | "month"
   cursor: today.startOf("isoweek"),  // inicio de semana (lunes)
   selected: today,
+  availableDates: [],               // Aquí guardaremos las fechas disponibles
+  especialidadId: 1,               // ID de la especialidad (puedes cambiarlo según necesites) (MODIFICABLE)
 });
-// FUNCION DEL BOTON PARA IR A LAS ESPECIALIDADES
-function irEspecialidades() {
-  router.push('/especialidades')
-}
-// FUNCION DEL BOTON PARA IR A LAS ESPECIALIDADES
 
 function prev()  { state.cursor = state.cursor.subtract(1, state.mode); }
 function next()  { state.cursor = state.cursor.add(1, state.mode); }
@@ -42,19 +41,54 @@ const monthTitle = computed(() => {
   return `${start.format("D")} – ${end.format("D")} ${end.format("MMMM")}`;
 });
 
+// Método para obtener los días disponibles desde el API
+async function fetchAvailableDates() {
+  try {
+    const data = await fetchDiasDisponibles(state.especialidadId);
+    // Filtramos y almacenamos las fechas disponibles
+    state.availableDates = data.map(item => ({
+      fecha: dayjs(item.fecha),
+      disponible: item.disponible
+    }));
+  } catch (error) {
+    console.error("Error al obtener los días disponibles:", error);
+  }
+}
+
+// Llamada a la API cuando el componente se monta
+onMounted(() => {
+  fetchAvailableDates();
+});
+
+// Función para verificar si el día está disponible
+function isAvailable(d) {
+  const date = dayjs(d).format("YYYY-MM-DD");
+  const available = state.availableDates.find(item => item.fecha.format("YYYY-MM-DD") === date);
+  return available ? available.disponible : false;
+}
+
 function buildCells() {
   if (state.mode === "week") {
     const start = state.cursor.startOf("isoWeek");
     return Array.from({ length: 7 }, (_, i) => start.add(i, "day"));
   }
-  // mes completo (6 filas)
   const start = state.cursor.startOf("month").startOf("isoWeek");
   return Array.from({ length: 42 }, (_, i) => start.add(i, "day"));
 }
+
 const cells = computed(buildCells);
 
 function isSameDay(a, b)   { return a.isSame(b, "day"); }
 function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.cursor, "month"); }
+
+// Función para manejar la redirección al hacer clic en un día disponible
+function handleDayClick(day) {
+  if (isAvailable(day)) {
+    // Redirige al usuario a la página de horarios para el día seleccionado
+    citaStore.setFecha(day.format('YYYY-MM-DD')); // Guardamos la fecha seleccionada en el store
+    router.push({ name: 'horarios', params: { selectedDate: day.format('YYYY-MM-DD') } });
+  }
+}   
 </script>
 
 <template>
@@ -91,24 +125,23 @@ function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.curs
     </div>
 
     <!-- Grid -->
-    <div class="grid" >
+    <div class="grid">
       <div v-for="d in cells" :key="d.valueOf()" class="col">
         <button
           class="w-100 border rounded-3 py-3 position-relative"
           :class="{
             'bg-light text-muted': isOtherMonth(d),
-            'border-2 border-primary': isSameDay(d, state.selected)
+            'border-2 border-primary': isSameDay(d, state.selected),
+            'bg-success': isAvailable(d),     // Día disponible
+            'bg-danger': !isAvailable(d)      // Día no disponible
           }"
-          @click="state.selected = d"
+          @click="handleDayClick(d)"
+
         >
           <span class="small">{{ d.date() }}</span>
         </button>
       </div>
     </div>
-
-
-    <button class="btn btn-danger 0 mb-3"
-    @click="irEspecialidades">Reservar cita</button>
   </div>
 </template>
 
