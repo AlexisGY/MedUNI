@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView      from '../views/LoginView.vue'
 import ReservarView   from '../views/ReservarView.vue'
 import CalendarView   from '../views/CalendarView.vue'
+import HorariosDiaView from '@/views/HorariosDiaView.vue'
+import HorariosHoraView from '@/views/HorariosHoraView.vue'
 // ESPECIALIDADES
 import EspecialidadesView from '../views/EspecialidadesView.vue'
 
@@ -14,6 +16,10 @@ const router = createRouter({
     { path: '/calendario',name: 'calendar', component: CalendarView, meta: { requiresAuth: true } }, 
     // ESPECIALIDADES ROUTER
     { path: '/especialidades',name: 'especialidades', component: EspecialidadesView, meta: { requiresAuth: true } },
+    // HORARIOS DIA ROUTER
+    { path: '/disponibilidad/:especialidadId',name: 'disponibilidad', component: HorariosDiaView, meta: { requiresAuth: true } },
+    //HORARIOS HORA ROUTER
+    { path: '/horarios/:especialidadId',name: 'horarios', component: HorariosHoraView, meta: { requiresAuth: true } },
     // 👈 nuevo
     { path: '/about', redirect: '/login' },
     { path: '/:pathMatch(.*)*', component: { template: '<div class="p-3">404</div>' } },

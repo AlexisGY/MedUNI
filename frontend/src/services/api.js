@@ -42,8 +42,11 @@ export async function listarEspecialidades() {
 export async function fetchEspecialidades() {
   return http('/especialidades'); // devuelve [{ id, nombre, estado }]
 }
+// DIAS DISPONIBLES JHARO BACKEND
+export async function fetchDiasDisponibles(especialidadId) {
+  return http(`/disponibilidad/${especialidadId}`);}
 
-// MEDICOS JHARO BACKEND
+  // MEDICOS JHARO BACKEND
 export async function fetchMedicosPorEspecialidad(idEspecialidad) {
   return http(`/medicos/especialidad/${idEspecialidad}`);
 }
