@@ -50,6 +50,10 @@ export async function fetchDiasDisponibles(especialidadId) {
 export async function fetchMedicosPorEspecialidad(idEspecialidad) {
   return http(`/medicos/especialidad/${idEspecialidad}`);
 }
+  // HORARIOS JHARO_BACKEND
+export async function fetchHorariosPorMedico(fecha, medico_id) {
+  return http(`/horarios/${medico_id}/${fecha}`);
+}
 // OTROS ALEXIS
 export async function listarHorarios({ especialidad, fecha }) {
   if (USE_MOCK) {

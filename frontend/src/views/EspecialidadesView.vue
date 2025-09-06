@@ -112,6 +112,7 @@ const especialidadesFiltradas = computed(() => {
 function verHorarios(esp) {
 // Usamos el ID de la especialidad para redirigir a la ruta de disponibilidad
   citaStore.setEspecialidad(esp.id);
+  citaStore.setEspecialidadNombre(esp.nombre);
   router.push({ name: 'disponibilidad', params: { especialidadId: esp.id } });
 }
 </script>
