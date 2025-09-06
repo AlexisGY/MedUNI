@@ -19,7 +19,7 @@ const router = createRouter({
     // HORARIOS DIA ROUTER
     { path: '/disponibilidad/:especialidadId',name: 'disponibilidad', component: HorariosDiaView, meta: { requiresAuth: true } },
     //HORARIOS HORA ROUTER
-    { path: '/horarios/:especialidadId',name: 'horarios', component: HorariosHoraView, meta: { requiresAuth: true } },
+    { path: '/horarios/:selectedDate',name: 'horarios', component: HorariosHoraView, meta: { requiresAuth: true } },
     // 👈 nuevo
     { path: '/about', redirect: '/login' },
     { path: '/:pathMatch(.*)*', component: { template: '<div class="p-3">404</div>' } },

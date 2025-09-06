@@ -6,7 +6,9 @@ export const useCitaStore = defineStore('cita', {
     hora: null,
     estudiante_id: null,
     medico_id: null,
+    medico_nombre: null,
     especialidad_id: null,
+    especialidad_nombre: null,
     estado: 'pendiente'
   }),
   actions: {
@@ -15,6 +17,9 @@ export const useCitaStore = defineStore('cita', {
     },
     setEspecialidad(id) {
       this.especialidad_id = id;
+    },
+    setEspecialidadNombre(nombre) {
+      this.especialidad_nombre = nombre;
     },
     setFecha(fecha) {
       this.fecha = fecha;

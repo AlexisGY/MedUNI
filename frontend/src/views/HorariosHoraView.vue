@@ -6,108 +6,139 @@
         <img src="@/assets/logo-uni.png" alt="UNI" class="h-10 w-10" />
         <h1 class="text-lg font-bold text-gray-800">UNI</h1>
       </div>
+      <button class="text-gray-700">☰</button>
     </header>
 
-    <!-- Título -->
-    <div class="px-4 py-3 text-center">
-      <p class="text-gray-600 text-sm">
-        Médicos disponibles en la especialidad de {{ especialidad.nombre }}
-      </p>
+    <!-- Especialidad y doctor actual -->
+    <div class="px-4 py-3 flex justify-between items-center bg-red-700 text-black">
+      <button @click="prevDoctor" :disabled="currentDoctorIndex === 0" class="px-2">&lt;</button>
+      <div class="text-center">
+        <h2 class="font-bold">{{ especialidadNombre }}</h2>
+        <p>{{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</p>
+      </div>
+      <button @click="nextDoctor" :disabled="currentDoctorIndex === medicos.length - 1" class="px-2">&gt;</button>
     </div>
 
-    <!-- Lista de médicos -->
-    <div v-if="loading" class="text-center text-gray-500">Cargando médicos...</div>
-    <div v-else-if="error" class="text-center text-red-500">{{ error }}</div>
-    <div v-else>
-      <div v-if="medicos.length > 0">
-        <div v-for="medico in medicos" :key="medico.id" class="border-b p-4">
-          <h2 class="text-xl font-bold">{{ medico.nombre }} {{ medico.apellido }}</h2>
-          <p class="text-gray-500">Especialidad: {{ especialidad.nombre }}</p>
-        </div>
+    <!-- Día seleccionado -->
+    <div class="px-4 py-3 text-center">
+      <p class="text-sm text-gray-600">{{ fechaFormateada }}</p>
+    </div>
+
+    <!-- Leyenda -->
+    <div class="flex justify-center space-x-4 mb-4">
+      <div class="flex items-center space-x-1 text-sm">
+        <span class="w-3 h-3 rounded-full border"></span>
+        <span>Disponible</span>
       </div>
-      <div v-else class="text-center text-gray-500">No hay médicos disponibles para esta especialidad.</div>
+      <div class="flex items-center space-x-1 text-sm">
+        <span class="w-3 h-3 rounded-full bg-red-700"></span>
+        <span>Seleccionado</span>
+      </div>
+      <div class="flex items-center space-x-1 text-sm">
+        <span class="w-3 h-3 rounded-full bg-gray-300"></span>
+        <span>Ocupado</span>
+      </div>
+    </div>
+
+    <!-- Lista de horarios -->
+    <div class="grid grid-cols-3 gap-3 px-4">
+      <button
+        v-for="slot in horarios"
+        :key="slot.hora"
+        @click="seleccionarHorario(slot)"
+        :class="[
+          'py-2 rounded-lg border text-sm font-medium',
+          slot.estado === 'disponible' ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
+          slot.estado === 'ocupado' ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
+          slotSeleccionado?.hora === slot.hora ? 'bg-red-700 text-white' : ''
+        ]"
+        :disabled="slot.estado === 'ocupado'"
+      >
+        {{ slot.hora }}
+      </button>
+    </div>
+
+    <!-- Botón continuar -->
+    <div class="px-4 py-6">
+      <button
+        class="w-full py-3 bg-red-700 text-white rounded-lg font-bold disabled:bg-gray-300"
+        :disabled="!slotSeleccionado"
+        @click="continuar"
+      >
+        Continuar
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router"; // Usado para obtener parámetros de la ruta
-import { fetchMedicosPorEspecialidad } from "@/services/api";
-// Usamos el route para obtener la especialidad seleccionada
-const route = useRoute();
-const especialidad = route.params.especialidad; // Aquí asumimos que la especialidad se pasa como un parámetro de la ruta
+import { ref, computed, onMounted } from "vue";
+import { fetchMedicosPorEspecialidad } from "@/services/api"
+import { fetchHorariosPorMedico } from "@/services/api";
+import { useCitaStore } from "@/stores/reserva_cita";
+
+// Store con la especialidad seleccionada
+const citaStore = useCitaStore();
+const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
+const especialidadId = citaStore.especialidad_id;
+
 const medicos = ref([]);
-const loading = ref(false);
-const error = ref(null);
+const currentDoctorIndex = ref(0);
+const horarios = ref([]);
+const slotSeleccionado = ref(null);
+const fecha = citaStore.fecha
+const fechaAFormato = new Date(fecha);
+ // puedes cambiar dinámicamente la fecha
+
+const currentDoctor = computed(() => medicos.value[currentDoctorIndex.value]);
+
+const fechaFormateada = computed(() =>
+  fechaAFormato.toLocaleDateString("es-PE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+);
 
 onMounted(async () => {
-  if (!especialidad) {
-    error.value = "No se ha seleccionado una especialidad.";
-    return;
-  }
-
-  loading.value = true;
-  error.value = null;
-
-  try {
-    // Hacemos una solicitud para obtener los médicos según la especialidad
-    medicos.value = await fetchMedicosPorEspecialidad(especialidad.id);
-  } catch (e) {
-    error.value = "Error al cargar los médicos.";
-  } finally {
-    loading.value = false;
+  if (!especialidadId) return;
+  medicos.value = await fetchMedicosPorEspecialidad(especialidadId);
+  if (medicos.value.length > 0) {
+    await cargarHorarios();
   }
 });
+
+async function cargarHorarios() {
+  if (!currentDoctor.value) return;
+  horarios.value = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
+  slotSeleccionado.value = null;
+}
+
+function prevDoctor() {
+  if (currentDoctorIndex.value > 0) {
+    currentDoctorIndex.value--;
+    cargarHorarios();
+  }
+}
+
+function nextDoctor() {
+  if (currentDoctorIndex.value < medicos.value.length - 1) {
+    currentDoctorIndex.value++;
+    cargarHorarios();
+  }
+}
+
+function seleccionarHorario(slot) {
+  if (slot.estado === "disponible") {
+    slotSeleccionado.value = slot;
+  }
+}
+
+function continuar() {
+  alert(
+    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora}`
+  );
+}
+
 </script>
-
-<style scoped>
-/* Estilos personalizados */
-select {
-  font-size: 14px;
-}
-
-button {
-  cursor: pointer;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-}
-
-.text-gray-500 {
-  color: #6b7280;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.border {
-  border: 1px solid #ddd;
-}
-
-.rounded-lg {
-  border-radius: 8px;
-}
-
-.px-4, .py-3 {
-  padding: 0.75rem;
-}
-
-.focus\:outline-none:focus {
-  outline: none;
-}
-
-.focus\:ring-2:focus {
-  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.5);
-}
-</style>
