@@ -2,13 +2,36 @@
 import { useRouter } from 'vue-router'
 const router = useRouter()
 import { reactive, computed } from "vue";
+import { fetchUsuario } from '@/services/api'; // OBTENER USUARIO
 import dayjs from "dayjs";
+import { ref, onMounted } from 'vue';
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/es";
 import uniLogo from "../assets/logo-uni.png";
 
 import { useCitaStore } from "@/stores/reserva_cita";
 const citaStore = useCitaStore(); // CITA STORE
+
+// Simula una llamada asíncrona, como la carga de datos
+const estudianteDatos = ref([]);
+const loading = ref(false); // 👈 aquí declaramos loading
+const error = ref(null);
+onMounted(async () => {
+  loading.value = true;
+  try {
+   const username = localStorage.getItem('user');
+    estudianteDatos.value = await fetchUsuario(username);
+    citaStore.setEstudiante(estudianteDatos.value.id) // Llamar al API
+    // Si tu backend NO envía icono, podrías mapear un ícono por defecto aquí.
+    // ejemplo: especialidades.value = especialidades.value.map(e => ({ ...e, icon: "🦷" }));
+  } catch (e) {
+    error.value = e?.response?.data?.detail || e.message || "Error cargando especialidades";
+  } finally {
+    loading.value = false;
+  }
+});
+
+console.log(estudianteDatos)
  // ID del estudiante logueado
 
 dayjs.extend(isoWeek);
@@ -22,6 +45,7 @@ const state = reactive({
 });
 // FUNCION DEL BOTON PARA IR A LAS ESPECIALIDADES
 function irEspecialidades() {
+  
   router.push('/especialidades')
 }
 // FUNCION DEL BOTON PARA IR A LAS ESPECIALIDADES
@@ -67,6 +91,11 @@ function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.curs
         <i class="bi bi-list"></i>
       </button>
     </header>
+    
+     <!-- Saludo -->
+    <div class="alert alert-info text-center py-3 mb-3">
+    <span class="fw-bold">¡Bienvenido, {{estudianteDatos.nombres}} {{estudianteDatos.apellidos}}!</span>
+    </div>
 
     <!-- Agenda -->
     <div class="alert alert-light border mt-3 d-flex align-items-center gap-2">

@@ -12,8 +12,8 @@ def reservar_cita(cita: CitaCreate):
         validarEstado(cita.estado)
         #------------------------------------------
         cur.execute(
-            "INSERT INTO citas (estudiante_id, medico_id, fecha, hora, estado) VALUES (%s, %s, %s, %s, %s) RETURNING id",
-            (cita.estudiante_id, cita.medico_id, cita.fecha, cita.hora, cita.estado)
+            "INSERT INTO citas (estudiante_id, medico_id, fecha, hora, estado, especialidad_id) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
+            (cita.estudiante_id, cita.medico_id, cita.fecha, cita.hora, cita.estado, cita.especialidad_id)
         )
         conn.commit()
         conn.close()
