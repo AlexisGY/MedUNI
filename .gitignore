@@ -1,18 +1,28 @@
-# Entornos virtuales
+# ===== Entornos virtuales =====
 venv/
 backend/venv/
+.env
+*.env
 
+# ===== Node (Frontend) =====
 node_modules/
 frontend/node_modules/
 dist/
+*.log
 
-# Archivos de Python
+# ===== Python (Backend) =====
 __pycache__/
-backend/__pycache__
-backend/app/__pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
 
-# Archivos de sistema
+# ===== Archivos de configuración locales =====
+.idea/
+.vscode/
+*.swp
+
+# ===== Archivos de sistema =====
 .DS_Store
 Thumbs.db
-backend/app/__pycache__/main.cpython-311.pyc
