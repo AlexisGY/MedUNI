@@ -40,21 +40,21 @@
       </div>
     </div>
 
-    <!-- Lista de horarios -->
+    <!-- Lista de horarios (RECORDAR QUE EN EL BACKEND LOS ATRIBUTOS SON HORA_INICIO, HORA_FINAL, DISPONIBILIDAD)-->
     <div class="grid grid-cols-3 gap-3 px-4">
       <button
         v-for="slot in horarios"
-        :key="slot.hora"
+        :key="slot.hora_inicio"
         @click="seleccionarHorario(slot)"
         :class="[
           'py-2 rounded-lg border text-sm font-medium',
-          slot.estado === 'disponible' ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
-          slot.estado === 'ocupado' ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
-          slotSeleccionado?.hora === slot.hora ? 'bg-red-700 text-white' : ''
+          slot.disponibilidad === true ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
+          slot.disponibilidad === false ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
+          slotSeleccionado?.hora_inicio === slot.hora_inicio ? 'bg-red-700 text-white' : ''
         ]"
-        :disabled="slot.estado === 'ocupado'"
+        :disabled="slot.disponibilidad === false"
       >
-        {{ slot.hora }}
+        {{ slot.hora_inicio }} - {{ slot.hora_fin }}
       </button>
     </div>
 
@@ -71,11 +71,13 @@
   </div>
 </template>
 
+<!-- SCRIPT-->
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { fetchMedicosPorEspecialidad } from "@/services/api"
 import { fetchHorariosPorMedico } from "@/services/api";
 import { useCitaStore } from "@/stores/reserva_cita";
+import { reservarCita } from "@/services/api"; // Reservar cita
 
 // Store con la especialidad seleccionada
 const citaStore = useCitaStore();
@@ -108,13 +110,14 @@ onMounted(async () => {
     await cargarHorarios();
   }
 });
-
+// CARGAR HORARIOS
 async function cargarHorarios() {
   if (!currentDoctor.value) return;
   horarios.value = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
   slotSeleccionado.value = null;
 }
 
+// CARGAR HORARIOS SEGUN EL DOCTOR POSTERIOR
 function prevDoctor() {
   if (currentDoctorIndex.value > 0) {
     currentDoctorIndex.value--;
@@ -122,6 +125,7 @@ function prevDoctor() {
   }
 }
 
+// CARGAR HORARIOS SEGUN EL DOCTOR POSTERIOR
 function nextDoctor() {
   if (currentDoctorIndex.value < medicos.value.length - 1) {
     currentDoctorIndex.value++;
@@ -130,15 +134,31 @@ function nextDoctor() {
 }
 
 function seleccionarHorario(slot) {
-  if (slot.estado === "disponible") {
+  if (slot.disponibilidad === true) {
     slotSeleccionado.value = slot;
   }
 }
 
 function continuar() {
-  alert(
-    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora}`
-  );
+  citaStore.setHora(slotSeleccionado.value.hora_inicio)
+  citaStore.setMedico(currentDoctor.value.id)
+  // Datos de la cita a reservar
+  const citaData = {    
+    estudiante_id: citaStore.estudiante_id, // ID del estudiante logueado
+    medico_id: currentDoctor.value.id,
+    especialidad_id: especialidadId,
+    fecha: fecha,
+    hora: slotSeleccionado.value.hora_inicio,
+    estado : citaStore.estado
+  };
+  reservarCita(citaData)
+    .then(() => {
+        alert(`Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora_inicio}`);
+    })
+    .catch((error) => {
+      console.error("Error reservando la cita:", error);
+      alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
+    });
 }
 
 </script>

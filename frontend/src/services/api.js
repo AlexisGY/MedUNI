@@ -33,6 +33,16 @@ export async function login({ username, password }) {
     body: JSON.stringify({ username, password }),
   });
 }
+/* ---------- DATOS DEL USUARIO QUE INGRESÓ AL SISTEMA JHARO_BACKEND---------- */
+export async function fetchUsuario(username) {
+  // Eliminar las comillas dobles al principio y al final del username, si las hay
+  username = username.replace(/^"|"$/g, '');
+
+  // Asegúrate de codificar correctamente el username
+  const encodedUsername = encodeURIComponent(username);
+  return http(`/auth/me?username=${encodedUsername}`);
+} 
+
 /* ---------- CATÁLOGOS ---------- */
 export async function listarEspecialidades() {
   if (USE_MOCK) return ['Odontología','Medicina General','Psicología']
@@ -54,6 +64,14 @@ export async function fetchMedicosPorEspecialidad(idEspecialidad) {
 export async function fetchHorariosPorMedico(fecha, medico_id) {
   return http(`/horarios/${medico_id}/${fecha}`);
 }
+  // RESERVAR CITA JHARO_BACKEND
+export async function reservarCita(citaData) {
+  return http('/citas/reservar', {
+    method: 'POST',
+    body: JSON.stringify(citaData),
+  });
+}
+
 // OTROS ALEXIS
 export async function listarHorarios({ especialidad, fecha }) {
   if (USE_MOCK) {

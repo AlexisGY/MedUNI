@@ -6,9 +6,11 @@ import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/es";
 import uniLogo from "../assets/logo-uni.png";
 import { fetchDiasDisponibles } from "@/services/api"
-
 import { useCitaStore } from "@/stores/reserva_cita";
+
 const citaStore = useCitaStore(); // CITA STORE
+
+import { reservarCita } from '@/services/api'; //reservar cita
 
 dayjs.extend(isoWeek);
 dayjs.locale("es");

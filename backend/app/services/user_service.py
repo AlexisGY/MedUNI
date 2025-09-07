@@ -15,10 +15,10 @@ def login_user(username: str, password: str):
     return False
 
 
-def get_me(username: str):
+def get_me(codigo_estudiante: str):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, nombres, apellidos, correo, codigo_estudiante, contrasena_dirce FROM estudiantes WHERE codigo_estudiante = %s", (username,))
+    cur.execute("SELECT id, nombres, apellidos, correo, codigo_estudiante, contrasena_dirce FROM estudiantes WHERE codigo_estudiante = %s", (codigo_estudiante,))
     row = cur.fetchone()
     conn.close()
 

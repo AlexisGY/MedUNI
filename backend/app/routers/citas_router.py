@@ -4,7 +4,7 @@ from app.services.citas_service import reservar_cita, getCitaReservada
 
 router = APIRouter(prefix="/citas", tags=["Citas"])
 
-
+#INTEGRAR 
 @router.post("/reservar", response_model = CitaCreate)
 def reservar(data: CitaCreate):
     cita_reservada = reservar_cita(data)
@@ -13,11 +13,10 @@ def reservar(data: CitaCreate):
         return {
             "estudiante_id": data.estudiante_id,
             "medico_id": data.medico_id,
-            "especialida_id": data.especialidad_id,
+            "especialidad_id": data.especialidad_id,
             "fecha": data.fecha,
             "hora": data.hora.strftime("%H:%M"),
-            "estado": data.estado,
-            "message" : "Cita reservada exitosamente ✅"  
+            "estado": data.estado
         }
     
     raise HTTPException(
@@ -25,6 +24,8 @@ def reservar(data: CitaCreate):
         detail="❌ Credenciales inválidas"
     )
 
+
+#CITA RESERVADA (DEBE MOSTRARSE EN PANTALLA)
 @router.get("/cita-confirmada", response_model = CitaResponse)
 def mostrar_cita(estudiante_id: int):
     data = getCitaReservada(estudiante_id)

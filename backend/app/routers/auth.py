@@ -19,9 +19,11 @@ def login(data: UserLogin):
         }
     raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-@router.post("/me", response_model = AuthenticatedUser)
-def me():
-    user_data = get_me()
+
+#INTEGRAR
+@router.get("/me", response_model = AuthenticatedUser)
+def me(username: str):
+    user_data = get_me(username)
     if user_data:
         return {
             "id" : user_data["id"],
