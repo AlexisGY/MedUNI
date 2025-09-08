@@ -5,7 +5,7 @@ class UserLogin(BaseModel):
     password: str
 
 class AuthenticatedUser(BaseModel):
-    id: int | None = None
+    id: int 
     nombres: str
     apellidos: str
     correo: str
