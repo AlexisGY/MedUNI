@@ -78,13 +78,34 @@
       </button>
     </div>
 
+    <!-- Modal de confirmación -->
+    <div v-if="showConfirmationModal" class="modal-backdrop">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>Reserva de cita</h3>
+          <button class="btn-close" @click="closeConfirmationModal">✖</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Especialidad:</strong> {{ especialidadNombre }}</p>
+          <p><strong>Médico:</strong> {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</p>
+          <p><strong>Fecha:</strong> {{ fechaFormateada }}</p>
+          <p><strong>Hora:</strong> {{ slotSeleccionado?.hora_inicio }} - {{ slotSeleccionado?.hora_fin }}</p>
+          <p><strong>Recuerde llegar 10 minutos antes de su cita.</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="closeConfirmationModal">Cancelar</button>
+          <button class="btn btn-primary" @click="confirmar_cita">Confirmar cita</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Botón continuar -->
     <div class="container py-4 mt-auto">
       <button
         type="button"
         class="btn w-100 fw-bold btn-primary-uni"
         :disabled="!slotSeleccionado"
-        @click="continuar"
+        @click="mostrarModalConfirmacion"
       >
         Continuar
       </button>
@@ -98,15 +119,19 @@ import { ref, computed, onMounted } from "vue";
 import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico } from "@/services/api";
 import { useCitaStore } from "@/stores/reserva_cita";
 import { reservarCita } from "@/services/api"; // Reservar cita
+import { useRouter } from "vue-router";
 
 const citaStore = useCitaStore();
 const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
 const especialidadId = citaStore.especialidad_id;
+const router = useRouter();
 
 const medicos = ref([]);
 const currentDoctorIndex = ref(0);
 const horarios = ref([]);
 const slotSeleccionado = ref(null);
+
+const showConfirmationModal = ref(false);
 
 const fecha = citaStore.fecha; // se asume que viene del flujo anterior
 const fechaAFormato = fecha ? new Date(fecha) : new Date()
@@ -189,7 +214,17 @@ function seleccionarHorario(slot) {
   }
 }
 
-function continuar() {
+// Modal de confirmación
+function mostrarModalConfirmacion() {
+  showConfirmationModal.value = true; // Muestra el modal de confirmación
+}
+// Cerrar modal de confirmación
+function closeConfirmationModal() {
+  showConfirmationModal.value = false; // Cierra el modal de confirmación
+}
+
+
+function confirmar_cita() {
   citaStore.setHora(slotSeleccionado.value.hora_inicio)
   citaStore.setMedico(currentDoctor.value.id)
   const citaData = {    
@@ -201,15 +236,16 @@ function continuar() {
     estado : citaStore.estado
   };
   reservarCita(citaData)
-  .then(() => {
-        alert(
-    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora_inicio}`
-  );
+    .then(() => {
+      
+      closeConfirmationModal();// Cierra el modal
     })
     .catch((error) => {
       console.error("Error reservando la cita:", error);
       alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
     });
+    router.push('/calendario')
+
 }
 </script>
 
