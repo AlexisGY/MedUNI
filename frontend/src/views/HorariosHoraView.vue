@@ -64,17 +64,17 @@
     <div class="grid grid-cols-3 gap-3 px-4">
       <button
         v-for="slot in horarios"
-        :key="slot.hora"
+        :key="slot.hora_inicio"
         @click="seleccionarHorario(slot)"
         :class="[
           'py-2 rounded-lg border text-sm font-medium',
-          slot.estado === 'disponible' ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
-          slot.estado === 'ocupado' ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
-          slotSeleccionado?.hora === slot.hora ? 'bg-red-700 text-white' : ''
+          slot.disponibilidad === true ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
+          slot.disponibilidad === false ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
+          slotSeleccionado?.hora_inicio === slot.hora_inicio ? 'bg-red-700 text-white' : ''
         ]"
-        :disabled="slot.estado === 'ocupado'"
+        :disabled="slot.disponibilidad === false"
       >
-        {{ slot.hora }}
+        {{ slot.hora_inicio }} - {{ slot.hora_fin }}
       </button>
     </div>
 
@@ -109,7 +109,7 @@ const horarios = ref([]);
 const slotSeleccionado = ref(null);
 
 const fecha = citaStore.fecha; // se asume que viene del flujo anterior
-const fechaAFormato = fecha ? new Date(fecha) : new Date();
+const fechaAFormato = fecha ? new Date(fecha) : new Date()
 
 const currentDoctor = computed(() => medicos.value[currentDoctorIndex.value]);
 
@@ -190,9 +190,30 @@ function seleccionarHorario(slot) {
 }
 
 function continuar() {
-  alert(
-    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora}`
+  citaStore.setHora(slotSeleccionado.value.hora_inicio)
+  citaStore.setMedico(currentDoctor.value.id)
+  const citaData = {    
+    estudiante_id: citaStore.estudiante_id, // ID del estudiante logueado
+    medico_id: currentDoctor.value.id,
+    especialidad_id: especialidadId,
+    fecha: fecha,
+    hora: slotSeleccionado.value.hora_inicio,
+    estado : citaStore.estado
+  };
+  reservarCita(citaData)
+  .then(() => {
+        alert(
+    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora_inicio}`
   );
+    })
+    .catch((error) => {
+      console.error("Error reservando la cita:", error);
+      alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
+    });
+  alert(
+    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora_inicio}`
+  );
+
 }
 </script>
 
