@@ -1,67 +1,88 @@
+<!-- views/HorariosHoraView.vue -->
 <template>
-  <div class="min-h-screen bg-white flex flex-col">
+  <div class="d-flex flex-column min-vh-100" style="background: var(--color-surface); color: var(--color-text);">
     <!-- Header -->
-    <header class="flex justify-between items-center px-4 py-3 border-b">
-      <div class="flex items-center space-x-2">
-        <img src="@/assets/logo-uni.png" alt="UNI" class="h-10 w-10" />
-        <h1 class="text-lg font-bold text-gray-800">UNI</h1>
+    <header class="border-bottom" style="background: var(--color-surface);">
+      <div class="container py-2 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <img src="@/assets/logo-uni.png" alt="UNI" style="height:40px;width:40px;" />
+          <h1 class="fs-5 fw-semibold mb-0">UNI</h1>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary">☰</button>
       </div>
-      <button class="text-gray-700">☰</button>
     </header>
 
     <!-- Especialidad y doctor actual -->
-    <div class="px-4 py-3 flex justify-between items-center bg-red-700 text-black">
-      <button @click="prevDoctor" :disabled="currentDoctorIndex === 0" class="px-2">&lt;</button>
-      <div class="text-center">
-        <h2 class="font-bold">{{ especialidadNombre }}</h2>
-        <p>{{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</p>
+    <section class="py-3" style="background: var(--color-primary); color: var(--color-surface);">
+      <div class="container d-flex justify-content-between align-items-center">
+        <button
+          type="button"
+          class="btn btn-light btn-sm"
+          :disabled="currentDoctorIndex === 0"
+          @click="prevDoctor"
+          aria-label="Doctor anterior"
+        >&lt;</button>
+
+        <div class="text-center">
+          <h2 class="h6 fw-bold mb-1">{{ especialidadNombre }}</h2>
+          <p class="mb-0 small" style="opacity:.95;">
+            {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-light btn-sm"
+          :disabled="currentDoctorIndex === medicos.length - 1"
+          @click="nextDoctor"
+          aria-label="Siguiente doctor"
+        >&gt;</button>
       </div>
-      <button @click="nextDoctor" :disabled="currentDoctorIndex === medicos.length - 1" class="px-2">&gt;</button>
-    </div>
+    </section>
 
     <!-- Día seleccionado -->
-    <div class="px-4 py-3 text-center">
-      <p class="text-sm text-gray-600">{{ fechaFormateada }}</p>
+    <div class="container text-center py-3">
+      <p class="mb-0 text-muted small">{{ fechaFormateada }}</p>
     </div>
 
     <!-- Leyenda -->
-    <div class="flex justify-center space-x-4 mb-4">
-      <div class="flex items-center space-x-1 text-sm">
-        <span class="w-3 h-3 rounded-full border"></span>
-        <span>Disponible</span>
-      </div>
-      <div class="flex items-center space-x-1 text-sm">
-        <span class="w-3 h-3 rounded-full bg-red-700"></span>
-        <span>Seleccionado</span>
-      </div>
-      <div class="flex items-center space-x-1 text-sm">
-        <span class="w-3 h-3 rounded-full bg-gray-300"></span>
-        <span>Ocupado</span>
+    <div class="container mb-2">
+      <div class="d-flex justify-content-center gap-4 small">
+        <div class="d-flex align-items-center gap-1">
+          <span class="legend-dot border"></span><span>Disponible</span>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+          <span class="legend-dot selected"></span><span>Seleccionado</span>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+          <span class="legend-dot occupied"></span><span>Ocupado</span>
+        </div>
       </div>
     </div>
 
-    <!-- Lista de horarios (RECORDAR QUE EN EL BACKEND LOS ATRIBUTOS SON HORA_INICIO, HORA_FINAL, DISPONIBILIDAD)-->
+    <!-- Lista de horarios -->
     <div class="grid grid-cols-3 gap-3 px-4">
       <button
         v-for="slot in horarios"
-        :key="slot.hora_inicio"
+        :key="slot.hora"
         @click="seleccionarHorario(slot)"
         :class="[
           'py-2 rounded-lg border text-sm font-medium',
-          slot.disponibilidad === true ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
-          slot.disponibilidad === false ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
-          slotSeleccionado?.hora_inicio === slot.hora_inicio ? 'bg-red-700 text-white' : ''
+          slot.estado === 'disponible' ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
+          slot.estado === 'ocupado' ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
+          slotSeleccionado?.hora === slot.hora ? 'bg-red-700 text-white' : ''
         ]"
-        :disabled="slot.disponibilidad === false"
+        :disabled="slot.estado === 'ocupado'"
       >
-        {{ slot.hora_inicio }} - {{ slot.hora_fin }}
+        {{ slot.hora }}
       </button>
     </div>
 
     <!-- Botón continuar -->
-    <div class="px-4 py-6">
+    <div class="container py-4 mt-auto">
       <button
-        class="w-full py-3 bg-red-700 text-white rounded-lg font-bold disabled:bg-gray-300"
+        type="button"
+        class="btn w-100 fw-bold btn-primary-uni"
         :disabled="!slotSeleccionado"
         @click="continuar"
       >
@@ -74,12 +95,10 @@
 <!-- SCRIPT-->
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { fetchMedicosPorEspecialidad } from "@/services/api"
-import { fetchHorariosPorMedico } from "@/services/api";
+import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico } from "@/services/api";
 import { useCitaStore } from "@/stores/reserva_cita";
 import { reservarCita } from "@/services/api"; // Reservar cita
 
-// Store con la especialidad seleccionada
 const citaStore = useCitaStore();
 const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
 const especialidadId = citaStore.especialidad_id;
@@ -88,9 +107,9 @@ const medicos = ref([]);
 const currentDoctorIndex = ref(0);
 const horarios = ref([]);
 const slotSeleccionado = ref(null);
-const fecha = citaStore.fecha
-const fechaAFormato = new Date(fecha);
- // puedes cambiar dinámicamente la fecha
+
+const fecha = citaStore.fecha; // se asume que viene del flujo anterior
+const fechaAFormato = fecha ? new Date(fecha) : new Date();
 
 const currentDoctor = computed(() => medicos.value[currentDoctorIndex.value]);
 
@@ -110,10 +129,41 @@ onMounted(async () => {
     await cargarHorarios();
   }
 });
+
+function normalizarSlot(s) {
+  const hora_inicio = s.hora_inicio ?? s.hora ?? '';
+  const hora_fin = s.hora_fin ?? null;
+
+  let disponibilidad = s.disponibilidad;
+  if (typeof disponibilidad !== 'boolean') {
+    if (typeof s.estado === 'string') {
+      disponibilidad = s.estado.toLowerCase() === 'disponible';
+    } else if (s.estado === true || s.estado === false) {
+      disponibilidad = s.estado;
+    } else {
+      disponibilidad = true;
+    }
+  }
+
+  return {
+    ...s,
+    hora_inicio,
+    hora_fin,
+    disponibilidad,
+  };
+}
+
 // CARGAR HORARIOS
 async function cargarHorarios() {
   if (!currentDoctor.value) return;
-  horarios.value = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
+  const raw = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
+
+  // 👇 Esto te mostrará en la consola del navegador qué datos exactos manda tu backend
+  console.log('Ejemplo de slot desde API:', raw?.[0]);
+
+  // 👇 Normalizamos para que siempre tengas hora_inicio, hora_fin y disponibilidad
+  horarios.value = raw.map(normalizarSlot);
+
   slotSeleccionado.value = null;
 }
 
@@ -140,25 +190,56 @@ function seleccionarHorario(slot) {
 }
 
 function continuar() {
-  citaStore.setHora(slotSeleccionado.value.hora_inicio)
-  citaStore.setMedico(currentDoctor.value.id)
-  // Datos de la cita a reservar
-  const citaData = {    
-    estudiante_id: citaStore.estudiante_id, // ID del estudiante logueado
-    medico_id: currentDoctor.value.id,
-    especialidad_id: especialidadId,
-    fecha: fecha,
-    hora: slotSeleccionado.value.hora_inicio,
-    estado : citaStore.estado
-  };
-  reservarCita(citaData)
-    .then(() => {
-        alert(`Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora_inicio}`);
-    })
-    .catch((error) => {
-      console.error("Error reservando la cita:", error);
-      alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
-    });
+  alert(
+    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora}`
+  );
+}
+</script>
+
+<style scoped>
+/* Botón institucional usando tu paleta */
+.btn-primary-uni{
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+}
+.btn-primary-uni:disabled{
+  background: var(--color-border);
+  color: #888;
+}
+.btn-primary-uni:hover,
+.btn-primary-uni:focus{
+  filter: brightness(0.92);
+  color: var(--color-surface);
 }
 
-</script>
+/* Slots */
+.btn-slot{
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 500;
+}
+.btn-slot:hover{ background: var(--color-surface-alt); }
+.btn-slot.occupied{
+  background: var(--color-surface-alt);
+  color: #9aa0a6;
+  cursor: not-allowed;
+}
+.btn-slot.selected{
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+/* Leyenda */
+.legend-dot{
+  display:inline-block;
+  width: .75rem; height: .75rem;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+.legend-dot.selected{ background: var(--color-primary); border-color: var(--color-primary); }
+.legend-dot.occupied{ background: var(--color-surface-alt); }
+</style>

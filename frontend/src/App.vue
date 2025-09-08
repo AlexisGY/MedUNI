@@ -8,7 +8,7 @@ const route = useRoute()
 <template>
   <nav v-if="route.path !== '/login'" class="navbar navbar-expand-lg" style="background:#7b0000">
     <div class="container">
-      <RouterLink class="navbar-brand text-white fw-semibold" to="/">Citas UNI</RouterLink>
+      <RouterLink class="navbar-brand text-white fw-semibold" to="/">MedUNI</RouterLink>
       <div class="collapse navbar-collapse show">
         <ul class="navbar-nav ms-auto gap-2">
           <li class="nav-item" v-if="auth.isAuth"><RouterLink class="nav-link text-white" to="/reservar">Reservar</RouterLink></li>
