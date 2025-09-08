@@ -129,10 +129,41 @@ onMounted(async () => {
     await cargarHorarios();
   }
 });
+
+function normalizarSlot(s) {
+  const hora_inicio = s.hora_inicio ?? s.hora ?? '';
+  const hora_fin = s.hora_fin ?? null;
+
+  let disponibilidad = s.disponibilidad;
+  if (typeof disponibilidad !== 'boolean') {
+    if (typeof s.estado === 'string') {
+      disponibilidad = s.estado.toLowerCase() === 'disponible';
+    } else if (s.estado === true || s.estado === false) {
+      disponibilidad = s.estado;
+    } else {
+      disponibilidad = true;
+    }
+  }
+
+  return {
+    ...s,
+    hora_inicio,
+    hora_fin,
+    disponibilidad,
+  };
+}
+
 // CARGAR HORARIOS
 async function cargarHorarios() {
   if (!currentDoctor.value) return;
-  horarios.value = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
+  const raw = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
+
+  // 👇 Esto te mostrará en la consola del navegador qué datos exactos manda tu backend
+  console.log('Ejemplo de slot desde API:', raw?.[0]);
+
+  // 👇 Normalizamos para que siempre tengas hora_inicio, hora_fin y disponibilidad
+  horarios.value = raw.map(normalizarSlot);
+
   slotSeleccionado.value = null;
 }
 
