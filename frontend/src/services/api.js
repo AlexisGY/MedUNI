@@ -71,6 +71,12 @@ export async function reservarCita(citaData) {
     body: JSON.stringify(citaData),
   });
 }
+  // CITAS DEL USUARIO JHARO_BACKEND
+export async function fetchCitasPorEstudiante(usuarioId) {
+  return http(`/citas/citas_reservadas/${usuarioId}`);
+}
+
+
 
 // OTROS ALEXIS
 export async function listarHorarios({ especialidad, fecha }) {

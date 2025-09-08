@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from app.schemas.citas import CitaCreate, CitaResponse
-from app.services.citas_service import reservar_cita, getCitaReservada
+from app.services.citas_service import reservar_cita, getCitasReservadas
+from typing import List
 
 router = APIRouter(prefix="/citas", tags=["Citas"])
 
@@ -25,21 +26,24 @@ def reservar(data: CitaCreate):
     )
 
 
-#CITA RESERVADA (DEBE MOSTRARSE EN PANTALLA)
-@router.get("/cita-confirmada", response_model = CitaResponse)
-def mostrar_cita(estudiante_id: int):
-    data = getCitaReservada(estudiante_id)
-    if data:
-        return {
-            "cita_id": data[0],
-            "estudiante_id": data[1],
-            "medico_nombre": data[2],
-            "especialidad_nombre" : data[3],
-            "fecha": data[4],
-            "hora": data[5].strftime("%H:%M"),
-            "estado": data[6]
+@router.get("/citas_reservadas/{estudiante_id}", response_model=List[CitaResponse])
+def mostrar_citas(estudiante_id: int):
+    data = getCitasReservadas(estudiante_id)
+    if not data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="❌ No hay citas confirmadas"
+        )
+
+    return [
+        {
+            "cita_id": row[0],
+            "estudiante_id": row[1],
+            "medico_nombre": row[2],
+            "especialidad_nombre": row[3],
+            "fecha": row[4],
+            "hora": row[5].strftime("%H:%M"),
+            "estado": row[6],
         }
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="❌ No hay citas confirmadas"
-    )
+        for row in data
+    ]
