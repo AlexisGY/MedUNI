@@ -19,19 +19,23 @@ def reservar_cita(cita: CitaCreate):
         conn.close()
         return cita
 
-def getCitaReservada(estudiante_id: int):
+def getCitasReservadas(estudiante_id: int):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(
-        "SELECT c.id, c.estudiante_id, m.nombres, e.nombre, c.fecha, c.hora, c.estado " \
-        "FROM citas c JOIN medicos m ON c.medico_id = m.id JOIN especialidades e ON m.especialidad_id = e.id " \
-        "WHERE c.estudiante_id = %s and c.estado ='pendiente'" \
-        "ORDER BY c.fecha DESC, c.hora DESC LIMIT 1",
+        """
+        SELECT c.id, c.estudiante_id, m.nombres, e.nombre, c.fecha, c.hora, c.estado
+        FROM citas c
+        JOIN medicos m ON c.medico_id = m.id
+        JOIN especialidades e ON m.especialidad_id = e.id
+        WHERE c.estudiante_id = %s AND c.estado = 'pendiente'
+        ORDER BY c.fecha DESC, c.hora DESC
+        """,
         (estudiante_id,)
     )
-    cita_confirmada = cur.fetchone()
+    citas = cur.fetchall()
     conn.close()
-    return cita_confirmada
+    return citas
 
 # Validaciones
 def validarEstudiante(estudiante_id: int, cur):

@@ -1,16 +1,22 @@
 <script setup>
 import { useRouter } from 'vue-router'
 const router = useRouter()
-import { reactive, computed } from "vue";
-import { fetchUsuario } from '@/services/api'; // OBTENER USUARIO
+import { reactive, computed} from "vue";
+import { fetchUsuario, fetchCitasPorEstudiante } from '@/services/api'; // OBTENER USUARIO
 import dayjs from "dayjs";
 import { ref, onMounted } from 'vue';
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/es";
 import uniLogo from "../assets/logo-uni.png";
 
+import CitasCard from'@/components/CitaCard.vue' // COMPONENTE MOSTRAR CITAS
+
 import { useCitaStore } from "@/stores/reserva_cita";
 const citaStore = useCitaStore(); // CITA STORE
+
+const citas = ref([]); // AQUI GUARDAMOS LAS CITAS
+
+const diasReservados = ref([]); // Aquí guardaremos los días que tienen citas reservadas
 
 // Simula una llamada asíncrona, como la carga de datos
 const estudianteDatos = ref([]);
@@ -24,6 +30,10 @@ onMounted(async () => {
     citaStore.setEstudiante(estudianteDatos.value.id) // Llamar al API
     // Si tu backend NO envía icono, podrías mapear un ícono por defecto aquí.
     // ejemplo: especialidades.value = especialidades.value.map(e => ({ ...e, icon: "🦷" }));
+
+    citas.value = await fetchCitasPorEstudiante(estudianteDatos.value.id);
+
+     diasReservados.value = citas.value.map(cita => dayjs(cita.fecha).date());
   } catch (e) {
     error.value = e?.response?.data?.detail || e.message || "Error cargando especialidades";
   } finally {
@@ -79,6 +89,9 @@ const cells = computed(buildCells);
 
 function isSameDay(a, b)   { return a.isSame(b, "day"); }
 function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.cursor, "month"); }
+function isDayReserved(d) {
+  return diasReservados.value.includes(d.date()) && d.month() === state.cursor.month(); // Verifica que el mes coincida; // Verifica si el día está en la lista de días reservados
+}
 </script>
 
 <template>
@@ -97,11 +110,13 @@ function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.curs
     <span class="fw-bold">¡Bienvenido, {{estudianteDatos.nombres}} {{estudianteDatos.apellidos}}!</span>
     </div>
 
-    <!-- Agenda -->
-    <div class="alert alert-light border mt-3 d-flex align-items-center gap-2">
-      <span class="badge bg-danger">&nbsp;</span>
-      No hay citas programadas
-    </div>
+     <!-- Lista de citas -->
+    <div class="container">
+    <!-- Aquí tu calendario actual -->
+
+    <!-- Lista de citas -->
+    <CitasCard :citas="citas" />
+  </div>
 
     <!-- Controls -->
     <div class="d-flex align-items-center gap-2 mb-2">
@@ -126,7 +141,8 @@ function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.curs
           class="w-100 border rounded-3 py-3 position-relative"
           :class="{
             'bg-light text-muted': isOtherMonth(d),
-            'border-2 border-primary': isSameDay(d, state.selected)
+            'border-2 border-primary': isSameDay(d, state.selected),
+            'bg-gray-200': isDayReserved(d) // Clase para aplicar a los días reservados
           }"
           @click="state.selected = d"
         >
@@ -146,4 +162,11 @@ function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.curs
   .grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .25rem; }
   .cell { aspect-ratio: 1 / 1; } /* mantiene celdas cuadradas en mes */
   button.border-2 { border-width: 2px !important; }
+
+
+  /* Estilo para los días reservados */
+  .bg-gray-200 {
+    background-color: #d1d5db !important; /* Gris claro */
+    color: #6b7280; /* Gris más oscuro para el texto */
+  }
 </style>

@@ -210,10 +210,6 @@ function continuar() {
       console.error("Error reservando la cita:", error);
       alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
     });
-  alert(
-    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora_inicio}`
-  );
-
 }
 </script>
 
