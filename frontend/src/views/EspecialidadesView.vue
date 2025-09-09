@@ -2,19 +2,19 @@
   <div class="min-h-screen bg-white flex flex-col">
 
     <main class="flex-1">
-      <section class="max-w-3xl mx-auto px-4 py-8">
+      <section class="max-w-screen-x1 mx-auto px-4 py-8">
         <p class="text-center text-gray-600">
           Elige la especialidad o el doctor para reservar la cita
         </p>
 
         <!-- Reutilizando SearchFiltro -->
         <SearchFiltro
-          class="mt-6"
+          class="mt-4"
           :options="especialidades"
           label-key="nombre"
           v-model:search="search"
           v-model:filter="filter"
-          search-placeholder="Buscar por nombre"
+          search-placeholder="Buscar por nombre..."
           all-label="Todas las especialidades"
         />
 
