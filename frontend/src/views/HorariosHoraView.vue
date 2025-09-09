@@ -60,22 +60,32 @@
       </div>
     </div>
 
-    <!-- Lista de horarios -->
-    <div class="grid grid-cols-3 gap-3 px-4">
-      <button
-        v-for="slot in horarios"
-        :key="slot.hora_inicio"
-        @click="seleccionarHorario(slot)"
-        :class="[
-          'py-2 rounded-lg border text-sm font-medium',
-          slot.disponibilidad === true ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
-          slot.disponibilidad === false ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
-          slotSeleccionado?.hora_inicio === slot.hora_inicio ? 'bg-red-700 text-white' : ''
-        ]"
-        :disabled="slot.disponibilidad === false"
-      >
-        {{ slot.hora_inicio }} - {{ slot.hora_fin }}
-      </button>
+        <!-- Lista de horarios (responsive, limpio y accesible) -->
+    <div class="container">
+      <div v-if="horarios.length" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-4">
+        <div class="col" v-for="slot in horarios" :key="slot.hora_inicio">
+          <button
+            type="button"
+            class="btn w-100 btn-slot"
+            :class="{
+              occupied: slot.disponibilidad === false,
+              selected: slotSeleccionado?.hora_inicio === slot.hora_inicio
+            }"
+            :disabled="slot.disponibilidad === false"
+            @click="seleccionarHorario(slot)"
+            :aria-pressed="slotSeleccionado?.hora_inicio === slot.hora_inicio"
+            :title="slot.disponibilidad === false ? 'Ocupado' : 'Disponible'"
+          >
+            <span class="fw-medium">{{ slot.hora_inicio }}</span>
+            <span v-if="slot.hora_fin"> – {{ slot.hora_fin }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div v-else class="text-center text-muted py-5 small">
+        No hay horarios para este día.
+      </div>
     </div>
 
     <!-- Modal de confirmación -->
@@ -94,7 +104,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="closeConfirmationModal">Cancelar</button>
-          <button class="btn btn-primary" @click="confirmar_cita">Confirmar cita</button>
+          <button class="btn btn-primary" @click="confirmarCita">Confirmar cita</button>
         </div>
       </div>
     </div>
@@ -116,12 +126,14 @@
 <!-- SCRIPT-->
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico } from "@/services/api";
+import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico, reservarCita } from "@/services/api";
 import { useCitaStore } from "@/stores/reserva_cita";
-import { reservarCita } from "@/services/api"; // Reservar cita
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
+
+const route = useRoute();
 const citaStore = useCitaStore();
+
 const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
 const especialidadId = citaStore.especialidad_id;
 const router = useRouter();
@@ -131,10 +143,9 @@ const currentDoctorIndex = ref(0);
 const horarios = ref([]);
 const slotSeleccionado = ref(null);
 
+const fechaStr = route.params.selectedDate || citaStore.fecha || new Date().toISOString().slice(0, 10);
+const fechaAFormato = fechaStr ? new Date(`${fechaStr}T00:00:00`) : new Date();
 const showConfirmationModal = ref(false);
-
-const fecha = citaStore.fecha; // se asume que viene del flujo anterior
-const fechaAFormato = fecha ? new Date(fecha) : new Date()
 
 const currentDoctor = computed(() => medicos.value[currentDoctorIndex.value]);
 
@@ -181,7 +192,7 @@ function normalizarSlot(s) {
 // CARGAR HORARIOS
 async function cargarHorarios() {
   if (!currentDoctor.value) return;
-  const raw = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
+  const raw = await fetchHorariosPorMedico(fechaStr, currentDoctor.value.id);
 
   // 👇 Esto te mostrará en la consola del navegador qué datos exactos manda tu backend
   console.log('Ejemplo de slot desde API:', raw?.[0]);
@@ -224,28 +235,29 @@ function closeConfirmationModal() {
 }
 
 
-function confirmar_cita() {
-  citaStore.setHora(slotSeleccionado.value.hora_inicio)
-  citaStore.setMedico(currentDoctor.value.id)
+async function confirmarCita() {
+  if (!slotSeleccionado.value || !currentDoctor.value) return;
+
+  citaStore.setHora?.(slotSeleccionado.value.hora_inicio);
+  citaStore.setMedico?.(currentDoctor.value.id);
+
   const citaData = {    
-    estudiante_id: citaStore.estudiante_id, // ID del estudiante logueado
+    estudiante_id: citaStore.estudiante_id,
     medico_id: currentDoctor.value.id,
     especialidad_id: especialidadId,
-    fecha: fecha,
+    fecha: fechaStr,
     hora: slotSeleccionado.value.hora_inicio,
     estado : citaStore.estado
   };
-  reservarCita(citaData)
-    .then(() => {
-      
-      closeConfirmationModal();// Cierra el modal
-    })
-    .catch((error) => {
-      console.error("Error reservando la cita:", error);
-      alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
-    });
-    router.push('/calendario')
 
+  try {
+    await reservarCita(citaData);   
+    closeConfirmationModal();       
+    router.push('/calendario');     
+  } catch (error) {
+    console.error("Error reservando la cita:", error);
+    alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
+  }
 }
 </script>
 
@@ -295,4 +307,26 @@ function confirmar_cita() {
 }
 .legend-dot.selected{ background: var(--color-primary); border-color: var(--color-primary); }
 .legend-dot.occupied{ background: var(--color-surface-alt); }
+
+/* Modal */
+.modal-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  display: grid; place-items: center;
+  z-index: 1050;
+}
+.modal-container{
+  width: min(520px, 92vw);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  overflow: hidden;
+}
+.modal-header, .modal-footer{ padding: 12px 16px; }
+.modal-body{ padding: 8px 16px; }
+.btn-close{
+  border: none; background: transparent; font-size: 18px; line-height: 1;
+}
+
 </style>
