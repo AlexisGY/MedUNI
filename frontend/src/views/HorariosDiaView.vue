@@ -24,7 +24,7 @@ const state = reactive({
   cursor: today.startOf("isoweek"),  // inicio de semana (lunes)
   selected: today,
   availableDates: [],               // Aquí guardaremos las fechas disponibles
-  especialidadId: 1,               // ID de la especialidad (puedes cambiarlo según necesites) (MODIFICABLE)
+  especialidadId: citaStore.especialidad_id,               // ID de la especialidad (puedes cambiarlo según necesites) (MODIFICABLE)
 });
 
 function prev()  { state.cursor = state.cursor.subtract(1, state.mode); }
@@ -66,7 +66,7 @@ onMounted(() => {
 function isAvailable(d) {
   const date = dayjs(d).format("YYYY-MM-DD");
   const available = state.availableDates.find(item => item.fecha.format("YYYY-MM-DD") === date);
-  return available ? available.disponible : false;
+  return available ? available.disponible : "no listado";
 }
 
 function buildCells() {
@@ -85,7 +85,7 @@ function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.curs
 
 // Función para manejar la redirección al hacer clic en un día disponible
 function handleDayClick(day) {
-  if (isAvailable(day)) {
+  if (isAvailable(day) === true) {
     // Redirige al usuario a la página de horarios para el día seleccionado
     citaStore.setFecha(day.format('YYYY-MM-DD')); // Guardamos la fecha seleccionada en el store
     router.push({ name: 'horarios', params: { selectedDate: day.format('YYYY-MM-DD') } });
@@ -126,7 +126,8 @@ function handleDayClick(day) {
             'bg-light text-muted': isOtherMonth(d),
             'border-2 border-primary': isSameDay(d, state.selected),
             'bg-success': isAvailable(d),     // Día disponible
-            'bg-danger': !isAvailable(d)      // Día no disponible
+            'bg-danger': !isAvailable(d),      // Día no disponible
+            'bg-secondary': isAvailable(d) === 'no listado' // Día no listado en gris
           }"
           @click="handleDayClick(d)"
 
@@ -143,4 +144,7 @@ function handleDayClick(day) {
   .grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .25rem; }
   .cell { aspect-ratio: 1 / 1; } /* mantiene celdas cuadradas en mes */
   button.border-2 { border-width: 2px !important; }
+  .bg-secondary {
+  background-color: #f1f1f1 !important; /* Gris claro para los días no listados */
+}
 </style>
