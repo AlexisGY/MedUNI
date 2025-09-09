@@ -1,7 +1,7 @@
 from app.db import get_connection
 from datetime import date, timedelta
 
-def listar_dias_semana(especialidad_id, semanas=1):
+def listar_dias_semana(especialidad_id, semanas=2):
     """
     Retorna los días de la semana (o semanas siguientes) con su estado disponible/no disponible.
     - especialidad_id: id de la especialidad
@@ -13,7 +13,7 @@ def listar_dias_semana(especialidad_id, semanas=1):
 
     # Calcular rango de fechas
     hoy = date.today()
-    inicio_semana = hoy - timedelta(days=hoy.weekday())  # lunes de esta semana
+    inicio_semana = hoy # lunes de esta semana
     fin_semana = inicio_semana + timedelta(days=7*semanas - 1)
 
     query = """

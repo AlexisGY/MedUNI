@@ -8,4 +8,4 @@ router = APIRouter(prefix="/disponibilidad", tags=["Disponibilidad"])
 
 @router.get("/{especialidad_id}", response_model=List[DiasDisponibles])
 def get_especialidades(especialidad_id: int):
-    return listar_dias_semana(especialidad_id, 1)
+    return listar_dias_semana(especialidad_id, 2)
