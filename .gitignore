@@ -26,3 +26,7 @@ __pycache__/
 # ===== Archivos de sistema =====
 .DS_Store
 Thumbs.db
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
