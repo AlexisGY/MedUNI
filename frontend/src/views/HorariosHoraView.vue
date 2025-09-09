@@ -88,6 +88,26 @@
       </div>
     </div>
 
+    <!-- Modal de confirmación -->
+    <div v-if="showConfirmationModal" class="modal-backdrop">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>Reserva de cita</h3>
+          <button class="btn-close" @click="closeConfirmationModal">✖</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Especialidad:</strong> {{ especialidadNombre }}</p>
+          <p><strong>Médico:</strong> {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</p>
+          <p><strong>Fecha:</strong> {{ fechaFormateada }}</p>
+          <p><strong>Hora:</strong> {{ slotSeleccionado?.hora_inicio }} - {{ slotSeleccionado?.hora_fin }}</p>
+          <p><strong>Recuerde llegar 10 minutos antes de su cita.</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="closeConfirmationModal">Cancelar</button>
+          <button class="btn btn-primary" @click="confirmarCita">Confirmar cita</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Botón continuar -->
     <div class="container py-4 mt-auto">
@@ -95,7 +115,7 @@
         type="button"
         class="btn w-100 fw-bold btn-primary-uni"
         :disabled="!slotSeleccionado"
-        @click="continuar"
+        @click="mostrarModalConfirmacion"
       >
         Continuar
       </button>
@@ -106,10 +126,9 @@
 <!-- SCRIPT-->
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico } from "@/services/api";
+import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico, reservarCita } from "@/services/api";
 import { useCitaStore } from "@/stores/reserva_cita";
-import { reservarCita } from "@/services/api";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 
 const route = useRoute();
@@ -117,14 +136,17 @@ const citaStore = useCitaStore();
 
 const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
 const especialidadId = citaStore.especialidad_id;
+const router = useRouter();
 
 const medicos = ref([]);
 const currentDoctorIndex = ref(0);
 const horarios = ref([]);
 const slotSeleccionado = ref(null);
 
-const fechaStr = route.params.selectedDate || citaStore.fecha;
+const fechaStr = route.params.selectedDate || citaStore.fecha || new Date().toISOString().slice(0, 10);
 const fechaAFormato = fechaStr ? new Date(`${fechaStr}T00:00:00`) : new Date();
+const showConfirmationModal = ref(false);
+
 const currentDoctor = computed(() => medicos.value[currentDoctorIndex.value]);
 
 const fechaFormateada = computed(() =>
@@ -203,27 +225,39 @@ function seleccionarHorario(slot) {
   }
 }
 
-function continuar() {
-  citaStore.setHora(slotSeleccionado.value.hora_inicio)
-  citaStore.setMedico(currentDoctor.value.id)
+// Modal de confirmación
+function mostrarModalConfirmacion() {
+  showConfirmationModal.value = true; // Muestra el modal de confirmación
+}
+// Cerrar modal de confirmación
+function closeConfirmationModal() {
+  showConfirmationModal.value = false; // Cierra el modal de confirmación
+}
+
+
+async function confirmarCita() {
+  if (!slotSeleccionado.value || !currentDoctor.value) return;
+
+  citaStore.setHora?.(slotSeleccionado.value.hora_inicio);
+  citaStore.setMedico?.(currentDoctor.value.id);
+
   const citaData = {    
-    estudiante_id: citaStore.estudiante_id, // ID del estudiante logueado
+    estudiante_id: citaStore.estudiante_id,
     medico_id: currentDoctor.value.id,
     especialidad_id: especialidadId,
-    fecha: fecha,
+    fecha: fechaStr,
     hora: slotSeleccionado.value.hora_inicio,
     estado : citaStore.estado
   };
-  reservarCita(citaData)
-  .then(() => {
-        alert(
-    `Cita reservada con Dr. ${currentDoctor.value.nombre} ${currentDoctor.value.apellido} a las ${slotSeleccionado.value.hora_inicio}`
-  );
-    })
-    .catch((error) => {
-      console.error("Error reservando la cita:", error);
-      alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
-    });
+
+  try {
+    await reservarCita(citaData);   
+    closeConfirmationModal();       
+    router.push('/calendario');     
+  } catch (error) {
+    console.error("Error reservando la cita:", error);
+    alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
+  }
 }
 </script>
 
@@ -273,4 +307,26 @@ function continuar() {
 }
 .legend-dot.selected{ background: var(--color-primary); border-color: var(--color-primary); }
 .legend-dot.occupied{ background: var(--color-surface-alt); }
+
+/* Modal */
+.modal-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  display: grid; place-items: center;
+  z-index: 1050;
+}
+.modal-container{
+  width: min(520px, 92vw);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  overflow: hidden;
+}
+.modal-header, .modal-footer{ padding: 12px 16px; }
+.modal-body{ padding: 8px 16px; }
+.btn-close{
+  border: none; background: transparent; font-size: 18px; line-height: 1;
+}
+
 </style>
