@@ -5,6 +5,7 @@
   --color-text: #1F2937;       /* Text */
   --color-border: #E5E7EB;     /* Border */
   --color-success: #10B981;    /* Surcces*/
+}
   .btn-primary-uni {
   background-color: var(--color-primary);
   color: var(--color-surface);
@@ -14,6 +15,4 @@
 .btn-primary-uni:focus {
   filter: brightness(0.92);
   color: var(--color-surface);
-}
-
 }

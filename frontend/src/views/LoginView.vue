@@ -1,7 +1,7 @@
 <template>
   <main class="auth">
     <section class="auth-card">
-      <div class="brand-row">
+      <div class="brand-row justify-content-center">
         <img :src="logo" alt="UNI" class="brand" />
         <h1>Centro Médico UNI</h1>
       </div>

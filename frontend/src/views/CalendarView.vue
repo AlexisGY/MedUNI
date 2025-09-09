@@ -58,7 +58,6 @@ function irEspecialidades() {
   
   router.push('/especialidades')
 }
-// FUNCION DEL BOTON PARA IR A LAS ESPECIALIDADES
 
 function prev()  { state.cursor = state.cursor.subtract(1, state.mode); }
 function next()  { state.cursor = state.cursor.add(1, state.mode); }
@@ -83,7 +82,7 @@ function buildCells() {
   }
   // mes completo (6 filas)
   const start = state.cursor.startOf("month").startOf("isoWeek");
-  return Array.from({ length: 42 }, (_, i) => start.add(i, "day"));
+  return Array.from({ length: 35 }, (_, i) => start.add(i, "day"));
 }
 const cells = computed(buildCells);
 
@@ -96,15 +95,6 @@ function isDayReserved(d) {
 
 <template>
   <div class="container-fluid py-3">
-    <!-- Header -->
-    <header class="d-flex align-items-center gap-3 mb-3">
-      <img :src="uniLogo" alt="UNI" style="height:32px" />
-      <h1 class="h5 m-0">UNI</h1>
-      <button class="btn btn-outline-secondary ms-auto" aria-label="Menú">
-        <i class="bi bi-list"></i>
-      </button>
-    </header>
-    
      <!-- Saludo -->
     <div class="alert alert-info text-center py-3 mb-3">
     <span class="fw-bold">¡Bienvenido, {{estudianteDatos.nombres}} {{estudianteDatos.apellidos}}!</span>
@@ -151,9 +141,12 @@ function isDayReserved(d) {
       </div>
     </div>
 
-
-    <button class="btn btn-danger 0 mb-3"
-    @click="irEspecialidades">Reservar cita</button>
+    
+    <div class="d-flex justify-content-center mt-4 mb-3">
+      <button class="btn btn-primary-uni w-100 fs-4" @click="irEspecialidades">
+        Reservar cita
+      </button>
+    </div>
   </div>
 </template>
 
