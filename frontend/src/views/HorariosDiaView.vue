@@ -75,7 +75,7 @@ function buildCells() {
     return Array.from({ length: 7 }, (_, i) => start.add(i, "day"));
   }
   const start = state.cursor.startOf("month").startOf("isoWeek");
-  return Array.from({ length: 42 }, (_, i) => start.add(i, "day"));
+  return Array.from({ length: 35 }, (_, i) => start.add(i, "day"));
 }
 
 const cells = computed(buildCells);

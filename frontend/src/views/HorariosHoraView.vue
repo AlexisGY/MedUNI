@@ -60,23 +60,34 @@
       </div>
     </div>
 
-    <!-- Lista de horarios -->
-    <div class="grid grid-cols-3 gap-3 px-4">
-      <button
-        v-for="slot in horarios"
-        :key="slot.hora_inicio"
-        @click="seleccionarHorario(slot)"
-        :class="[
-          'py-2 rounded-lg border text-sm font-medium',
-          slot.disponibilidad === true ? 'bg-white text-gray-700 hover:bg-gray-100' : '',
-          slot.disponibilidad === false ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : '',
-          slotSeleccionado?.hora_inicio === slot.hora_inicio ? 'bg-red-700 text-white' : ''
-        ]"
-        :disabled="slot.disponibilidad === false"
-      >
-        {{ slot.hora_inicio }} - {{ slot.hora_fin }}
-      </button>
+        <!-- Lista de horarios (responsive, limpio y accesible) -->
+    <div class="container">
+      <div v-if="horarios.length" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-4">
+        <div class="col" v-for="slot in horarios" :key="slot.hora_inicio">
+          <button
+            type="button"
+            class="btn w-100 btn-slot"
+            :class="{
+              occupied: slot.disponibilidad === false,
+              selected: slotSeleccionado?.hora_inicio === slot.hora_inicio
+            }"
+            :disabled="slot.disponibilidad === false"
+            @click="seleccionarHorario(slot)"
+            :aria-pressed="slotSeleccionado?.hora_inicio === slot.hora_inicio"
+            :title="slot.disponibilidad === false ? 'Ocupado' : 'Disponible'"
+          >
+            <span class="fw-medium">{{ slot.hora_inicio }}</span>
+            <span v-if="slot.hora_fin"> – {{ slot.hora_fin }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div v-else class="text-center text-muted py-5 small">
+        No hay horarios para este día.
+      </div>
     </div>
+
 
     <!-- Botón continuar -->
     <div class="container py-4 mt-auto">
@@ -97,9 +108,13 @@
 import { ref, computed, onMounted } from "vue";
 import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico } from "@/services/api";
 import { useCitaStore } from "@/stores/reserva_cita";
-import { reservarCita } from "@/services/api"; // Reservar cita
+import { reservarCita } from "@/services/api";
+import { useRoute } from "vue-router";
 
+
+const route = useRoute();
 const citaStore = useCitaStore();
+
 const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
 const especialidadId = citaStore.especialidad_id;
 
@@ -108,9 +123,8 @@ const currentDoctorIndex = ref(0);
 const horarios = ref([]);
 const slotSeleccionado = ref(null);
 
-const fecha = citaStore.fecha; // se asume que viene del flujo anterior
-const fechaAFormato = fecha ? new Date(fecha) : new Date()
-
+const fechaStr = route.params.selectedDate || citaStore.fecha;
+const fechaAFormato = fechaStr ? new Date(`${fechaStr}T00:00:00`) : new Date();
 const currentDoctor = computed(() => medicos.value[currentDoctorIndex.value]);
 
 const fechaFormateada = computed(() =>
@@ -156,7 +170,7 @@ function normalizarSlot(s) {
 // CARGAR HORARIOS
 async function cargarHorarios() {
   if (!currentDoctor.value) return;
-  const raw = await fetchHorariosPorMedico(fecha, currentDoctor.value.id);
+  const raw = await fetchHorariosPorMedico(fechaStr, currentDoctor.value.id);
 
   // 👇 Esto te mostrará en la consola del navegador qué datos exactos manda tu backend
   console.log('Ejemplo de slot desde API:', raw?.[0]);

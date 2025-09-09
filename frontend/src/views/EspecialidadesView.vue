@@ -1,13 +1,5 @@
 <template>
   <div class="min-h-screen bg-white flex flex-col">
-    <header class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <img src="@/assets/logo-uni.png" alt="UNI" class="h-10 w-10" />
-          <h1 class="text-xl font-semibold text-gray-900">UNI</h1>
-        </div>
-      </div>
-    </header>
 
     <main class="flex-1">
       <section class="max-w-3xl mx-auto px-4 py-8">
@@ -75,8 +67,10 @@ onMounted(async () => {
 const especialidadesFiltradas = computed(() => {
   const q = search.value.trim().toLowerCase();
   return especialidades.value.filter((e) => {
-    const byName = e.nombre.toLowerCase().includes(q);
-    const byFilter = filter.value ? e.nombre === filter.value : true;
+    // Si no hay búsqueda, muestra todas; si hay, filtra por nombre
+    const byName = !q || e.nombre.toLowerCase().includes(q);
+    // Si el filtro está vacío o es 'Todas las especialidades', muestra todas; si no, filtra por nombre exacto
+    const byFilter = !filter.value || filter.value === "Todas las especialidades" || e.nombre === filter.value;
     return byName && byFilter;
   });
 });
