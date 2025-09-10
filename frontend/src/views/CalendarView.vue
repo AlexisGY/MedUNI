@@ -20,7 +20,7 @@ const diasReservados = ref([]); // Aquí guardaremos los días que tienen citas 
 
 // Simula una llamada asíncrona, como la carga de datos
 const estudianteDatos = ref([]);
-const loading = ref(false); // 👈 aquí declaramos loading
+const loading = ref(false);
 const error = ref(null);
 onMounted(async () => {
   loading.value = true;
@@ -95,18 +95,15 @@ function isDayReserved(d) {
 
 <template>
   <div class="container-fluid py-3">
-     <!-- Saludo -->
-    <div class="alert alert-info text-center py-3 mb-3">
-    <span class="fw-bold">¡Bienvenido, {{estudianteDatos.nombres}} {{estudianteDatos.apellidos}}!</span>
-    </div>
+      <!-- Saludo -->
+      <div class="alert alert-info text-center py-3 mb-3">
+      <span class="fw-bold">¡Bienvenido, {{estudianteDatos.nombres}} {{estudianteDatos.apellidos}}!</span>
+      </div>
 
-     <!-- Lista de citas -->
-    <div class="container">
-    <!-- Aquí tu calendario actual -->
-
-    <!-- Lista de citas -->
-    <CitasCard :citas="citas" />
-  </div>
+      <div class="mb-4">
+      <!-- Lista de citas -->
+        <CitasCard :citas="citas" />
+      </div>
 
     <!-- Controls -->
     <div class="d-flex align-items-center gap-2 mb-2">
@@ -141,12 +138,14 @@ function isDayReserved(d) {
       </div>
     </div>
 
-    
-    <div class="d-flex justify-content-center mt-4 mb-3">
-      <button class="btn btn-primary-uni w-100 fs-4" @click="irEspecialidades">
-        Reservar cita
-      </button>
+    <div class="container px-5">
+        <div class="d-flex justify-content-center mt-4 mb-3">
+          <button class="btn btn-primary-uni w-100 fs-4" @click="irEspecialidades">
+            Reservar cita
+          </button>
+        </div>
     </div>
+
   </div>
 </template>
 

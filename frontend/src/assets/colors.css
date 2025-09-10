@@ -16,3 +16,23 @@
   filter: brightness(0.92);
   color: var(--color-surface);
 }
+.badge-primary-uni {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+.badge-warning-uni {
+  background-color: #FFD966;
+  color: var(--color-text);
+}
+.badge-danger-uni {
+  background-color: #C0392B; 
+  color: var(--color-surface);
+}
+.badge-primary-uni,
+.badge-warning-uni,
+.badge-danger-uni {
+  border-radius: 10px;
+  padding: 0.35em 1em;
+  font-size: 0.9em;
+  font-weight: 600;
+}
