@@ -19,15 +19,12 @@ async function http(path, opts = {}) {
     throw new Error(msg)
   }
 
-  // Éxito: si no había cuerpo devolvemos null
   return data
 }
 
 
 /* ---------- AUTH ---------- */
 export async function login({ username, password }) {
-  // Asegúrate de que el nombre de la variable en el cuerpo de la petición
-  // coincida con lo que tu backend espera
   return http('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ username, password }),

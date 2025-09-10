@@ -1,19 +1,8 @@
 <!-- views/HorariosHoraView.vue -->
 <template>
   <div class="d-flex flex-column min-vh-100" style="background: var(--color-surface); color: var(--color-text);">
-    <!-- Header -->
-    <header class="border-bottom" style="background: var(--color-surface);">
-      <div class="container py-2 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-2">
-          <img src="@/assets/logo-uni.png" alt="UNI" style="height:40px;width:40px;" />
-          <h1 class="fs-5 fw-semibold mb-0">UNI</h1>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline-secondary">☰</button>
-      </div>
-    </header>
-
     <!-- Especialidad y doctor actual -->
-    <section class="py-3" style="background: var(--color-primary); color: var(--color-surface);">
+    <section class="py-3 rounded-3" style="background: var(--color-primary); color: var(--color-surface);">
       <div class="container d-flex justify-content-between align-items-center">
         <button
           type="button"
@@ -41,7 +30,7 @@
     </section>
 
     <!-- Día seleccionado -->
-    <div class="container text-center py-3">
+    <div class="container text-center py-3 ">
       <p class="mb-0 text-muted small">{{ fechaFormateada }}</p>
     </div>
 
@@ -194,16 +183,14 @@ async function cargarHorarios() {
   if (!currentDoctor.value) return;
   const raw = await fetchHorariosPorMedico(fechaStr, currentDoctor.value.id);
 
-  // 👇 Esto te mostrará en la consola del navegador qué datos exactos manda tu backend
   console.log('Ejemplo de slot desde API:', raw?.[0]);
 
-  // 👇 Normalizamos para que siempre tengas hora_inicio, hora_fin y disponibilidad
   horarios.value = raw.map(normalizarSlot);
 
   slotSeleccionado.value = null;
 }
 
-// CARGAR HORARIOS SEGUN EL DOCTOR POSTERIOR
+// CARGAR HORARIOS SEGUN EL DOCTOR ANTERIOR
 function prevDoctor() {
   if (currentDoctorIndex.value > 0) {
     currentDoctorIndex.value--;
@@ -238,31 +225,36 @@ function closeConfirmationModal() {
 async function confirmarCita() {
   if (!slotSeleccionado.value || !currentDoctor.value) return;
 
-  citaStore.setHora?.(slotSeleccionado.value.hora_inicio);
-  citaStore.setMedico?.(currentDoctor.value.id);
+  let horaISO = slotSeleccionado.value.hora_inicio || "";
 
-  const citaData = {    
-    estudiante_id: citaStore.estudiante_id,
-    medico_id: currentDoctor.value.id,
-    especialidad_id: especialidadId,
+
+  if (horaISO.length === 5) {
+    horaISO = `${horaISO}:00`;
+  }
+
+  const citaData = {
+    estudiante_id: Number(citaStore.estudiante_id),
+    medico_id: Number(currentDoctor.value.id),
+    especialidad_id: Number(especialidadId),
     fecha: fechaStr,
-    hora: slotSeleccionado.value.hora_inicio,
-    estado : citaStore.estado
+    hora: horaISO,   
+    estado: citaStore.estado ?? "pendiente",
   };
 
+
   try {
-    await reservarCita(citaData);   
-    closeConfirmationModal();       
-    router.push('/calendario');     
+    await reservarCita(citaData);
+    closeConfirmationModal();
+    router.push("/calendario");
   } catch (error) {
     console.error("Error reservando la cita:", error);
-    alert("Hubo un error al reservar la cita. Por favor, inténtalo de nuevo.");
+    alert("Hubo un error al reservar la cita. Inténtalo de nuevo.");
   }
 }
+
 </script>
 
 <style scoped>
-/* Botón institucional usando tu paleta */
 .btn-primary-uni{
   background: var(--color-primary);
   color: var(--color-surface);
