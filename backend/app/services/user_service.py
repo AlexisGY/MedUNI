@@ -5,7 +5,7 @@ from app.db import get_connection  # tu conexión psycopg
 def login_user(username: str, password: str):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT contrasena_dirce FROM estudiantes WHERE codigo_estudiante = %s", (username,))
+    cur.execute("SELECT codigo_dirce FROM estudiantes WHERE codigo_estudiante = %s", (username,))
     row = cur.fetchone()
     conn.close()
     
@@ -18,7 +18,7 @@ def login_user(username: str, password: str):
 def get_me(codigo_estudiante: str):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id, nombres, apellidos, correo, codigo_estudiante, contrasena_dirce FROM estudiantes WHERE codigo_estudiante = %s", (codigo_estudiante,))
+    cur.execute("SELECT id, nombres, apellidos, correo, codigo_estudiante, codigo_dirce FROM estudiantes WHERE codigo_estudiante = %s", (codigo_estudiante,))
     row = cur.fetchone()
     conn.close()
 
