@@ -95,15 +95,6 @@ function handleDayClick(day) {
 
 <template>
   <div class="container-fluid py-3">
-    <!-- Header -->
-    <header class="d-flex align-items-center gap-3 mb-3">
-      <img :src="uniLogo" alt="UNI" style="height:32px" />
-      <h1 class="h5 m-0">UNI</h1>
-      <button class="btn btn-outline-secondary ms-auto" aria-label="Menú">
-        <i class="bi bi-list"></i>
-      </button>
-    </header>
-
     <!-- Agenda -->
     <div class="alert alert-light border mt-3 d-flex align-items-center gap-2">
       <span class="badge bg-danger">&nbsp;</span>

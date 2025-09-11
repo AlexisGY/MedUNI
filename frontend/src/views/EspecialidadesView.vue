@@ -2,19 +2,19 @@
   <div class="min-h-screen bg-white flex flex-col">
 
     <main class="flex-1">
-      <section class="max-w-3xl mx-auto px-4 py-8">
+      <section class="max-w-screen-xl mx-auto px-4 py-8">
         <p class="text-center text-gray-600">
           Elige la especialidad o el doctor para reservar la cita
         </p>
 
         <!-- Reutilizando SearchFiltro -->
         <SearchFiltro
-          class="mt-6"
+          class="mt-4"
           :options="especialidades"
           label-key="nombre"
           v-model:search="search"
           v-model:filter="filter"
-          search-placeholder="Buscar por nombre"
+          search-placeholder="Buscar por nombre..."
           all-label="Todas las especialidades"
         />
 
@@ -23,8 +23,8 @@
         <div v-else-if="error" class="mt-3 text-center text-danger">{{ error }}</div>
 
         <!-- grid de cards -->
-        <div v-else class="row g-3 mt-1">
-          <div class="col-12 col-md-6" v-for="esp in especialidadesFiltradas" :key="esp.id">
+        <div v-else class="row g-4 mt-1">
+          <div class="col-12 col-sm-6 col-md-6 col-lg-4" v-for="esp in especialidadesFiltradas" :key="esp.id">
             <EspecialidadCard
               :nombre="esp.nombre"
               @ver-horarios="verHorarios(esp)"

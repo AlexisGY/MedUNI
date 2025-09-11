@@ -12,6 +12,8 @@ dist/
 
 # ===== Python (Backend) =====
 __pycache__/
+backend/__pycache__/
+backend/app/routers/__pycache__/
 *.py[cod]
 *.pyo
 *.pyd
@@ -26,3 +28,7 @@ __pycache__/
 # ===== Archivos de sistema =====
 .DS_Store
 Thumbs.db
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
