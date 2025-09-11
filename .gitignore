@@ -1,8 +1,7 @@
 # ===== Entornos virtuales =====
 venv/
 backend/venv/
-.env
-*.env
+
 
 # ===== Node (Frontend) =====
 node_modules/
@@ -19,7 +18,7 @@ backend/app/routers/__pycache__/
 *.pyd
 *.db
 *.sqlite3
-
+data/db
 # ===== Archivos de configuración locales =====
 .idea/
 .vscode/
