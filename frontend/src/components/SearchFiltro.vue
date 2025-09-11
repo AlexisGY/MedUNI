@@ -2,15 +2,15 @@
 <template>
   <div class="mx-auto max-w-[900px]">
     <div class="text-center">
-      <div class="inline-flex flex-col md:flex-row items-center gap-y-3 md:gap-y-0 md:gap-x-4 mb-2">
+      <div class="d-flex justify-content-center align-items-center mb-2" style="gap: 1rem;">
         <input
           :placeholder="props.searchPlaceholder"
-          class="w-full md:w-96 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
+          class="form-control w-auto"
           :value="props.search"
           @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
         />
         <select
-          class="border rounded-lg px-3 py-2 text-sm w-auto align-middle focus:outline-none focus:ring-2 focus:ring-red-600"
+          class="form-select w-auto"
           :value="props.filter"
           @change="$emit('update:filter', ($event.target as HTMLSelectElement).value)"
         >
@@ -40,10 +40,11 @@ defineEmits<{
   'update:search': [value: string];
   'update:filter': [value: string];
 }>();
-
-// Elimina el destructuring para mantener la reactividad de los props
 </script>
 
 <style scoped>
-/* opcional */
+.form-control:focus, .form-select:focus {
+  box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+  outline: none;
+}
 </style>
