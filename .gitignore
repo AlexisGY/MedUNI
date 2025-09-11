@@ -1,8 +1,7 @@
 # ===== Entornos virtuales =====
 venv/
 backend/venv/
-.env
-*.env
+
 
 # ===== Node (Frontend) =====
 node_modules/
