@@ -1,5 +1,5 @@
 import pytest
-from app.services import medicos_service
+from app.services.medicos_service import listar_medicos
 
 # Tests para listar_medicos()
 @pytest.mark.parametrize(
@@ -11,7 +11,7 @@ from app.services import medicos_service
     ]
 )
 def test_listar_medicos(especialidad_id, expected_count):
-    medicos = medicos_service.listar_medicos(especialidad_id)
+    medicos = listar_medicos(especialidad_id)
 
     assert isinstance(medicos, list)
 

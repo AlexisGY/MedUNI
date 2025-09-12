@@ -21,13 +21,13 @@ def listar_dias_semana(especialidad_id, semanas=2):
             SELECT generate_series(%s::date, %s::date, '1 day')::date AS fecha
         )
         SELECT  r.fecha,
-               CASE WHEN MAX(CASE 
-			                   WHEN de.id IS NOT NULL 
+               CASE WHEN MAX(CASE
+			                   WHEN de.id IS NOT NULL
 			                        AND r.fecha BETWEEN de.fecha_inicio AND de.fecha_fin
 			                        AND EXTRACT(ISODOW FROM r.fecha)::int = de.dia_semana
 			                        AND de.disponibilidad = true
 			                   THEN 1
-			                   ELSE 0 
+			                   ELSE 0
                		END) = 1
 				THEN true
 		        ELSE false

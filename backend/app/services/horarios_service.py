@@ -16,7 +16,7 @@ def gen_horarios(dia: date, medico_id: int):
         FROM disponibilidad_especialidad de
         INNER JOIN medicos me
             ON me.especialidad_id = de.especialidad_id
-        WHERE EXTRACT(ISODOW FROM %s::date) = de.dia_semana 
+        WHERE EXTRACT(ISODOW FROM %s::date) = de.dia_semana
         AND me.id = %s"""
     cursor.execute(query, (dia, medico_id))
     horas_limte = cursor.fetchall()
@@ -30,17 +30,17 @@ def gen_horarios(dia: date, medico_id: int):
     cursor = conn.cursor()
     query = """
                 WITH horarios AS (
-            SELECT 
+            SELECT
                 generate_series(
-                    ('2025-09-05 ' || %s)::timestamp, 
-                    ('2025-09-05 ' || %s)::timestamp - interval '30 minutes', 
+                    ('2025-09-05 ' || %s)::timestamp,
+                    ('2025-09-05 ' || %s)::timestamp - interval '30 minutes',
                     interval '30 minutes'
                 ) AS hora_inicio
         )
-        SELECT 
-            hora_inicio::time AS hora_inicio, 
+        SELECT
+            hora_inicio::time AS hora_inicio,
             (hora_inicio + interval '30 minutes')::time AS hora_final,
-            CASE 
+            CASE
                 WHEN c.id IS NOT NULL THEN FALSE  -- Si existe una cita, disponibilidad es false
                 ELSE TRUE  -- Si no existe una cita, disponibilidad es true
             END AS disponibilidad
@@ -56,4 +56,4 @@ def gen_horarios(dia: date, medico_id: int):
     cursor.close()
     conn.close()
 
-    return [{"hora_inicio": horario[0], "hora_fin": horario[1],"disponibilidad": horario[2]} for horario in horarios]  
+    return [{"hora_inicio": horario[0], "hora_fin": horario[1],"disponibilidad": horario[2]} for horario in horarios]

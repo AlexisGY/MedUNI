@@ -38,7 +38,7 @@ CREATE TABLE citas (
 CREATE TABLE disponibilidad_especialidad (
     id SERIAL PRIMARY KEY,
     especialidad_id INT NOT NULL REFERENCES especialidades(id),
-    fecha_inicio DATE NOT NULL, 
+    fecha_inicio DATE NOT NULL,
     fecha_fin DATE NOT NULL,
     hora_inicio TIME NOT NULL,
     hora_fin TIME NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE horario_medico (
 -- DATOS
 -- =======================
 
-INSERT INTO especialidades (nombre) VALUES 
+INSERT INTO especialidades (nombre) VALUES
 ('Cirugía General'),
 ('Cardiología'),
 ('Ginecología'),
@@ -81,14 +81,14 @@ INSERT INTO especialidades (nombre) VALUES
 
 -- Disponibilidad por especialidad (días disponibles)
 INSERT INTO disponibilidad_especialidad (especialidad_id, fecha_inicio, fecha_fin, hora_inicio, hora_fin, dia_semana)
-VALUES 
+VALUES
 (1, '2025-09-01', '2025-09-30', '08:00', '12:00', 1),
 (1, '2025-09-01', '2025-09-30', '08:00', '12:00', 2),
 (1, '2025-09-01', '2025-09-30', '08:00', '12:00', 4);
 
 -- Días no disponibles
 INSERT INTO disponibilidad_especialidad (especialidad_id, fecha_inicio, fecha_fin, hora_inicio, hora_fin, dia_semana, disponibilidad)
-VALUES 
+VALUES
 (1, '2025-09-01', '2025-09-30', '08:00', '12:00', 3, FALSE),
 (1, '2025-09-01', '2025-09-30', '08:00', '12:00', 5, FALSE);
 
@@ -101,4 +101,6 @@ VALUES
 
 -- Insertar un estudiante
 INSERT INTO estudiantes (nombres, apellidos, correo, codigo_estudiante, codigo_dirce)
-VALUES ('Jharo', 'Paucarcaja Ramos', 'jharolym.paucarcaja.r@uni.pe', '20234044I', '111111');
+VALUES
+('Jharo', 'Paucarcaja Ramos', 'jharolym.paucarcaja.r@uni.pe', '20234044I', '111111'),
+('Rolly Alejandro', 'Mamani Cutipa', 'rolly.mamani.c@uni.pe', '20240010E', '123456');
