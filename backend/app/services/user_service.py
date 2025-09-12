@@ -8,7 +8,7 @@ def login_user(username: str, password: str):
     cur.execute("SELECT contrasena_dirce FROM estudiantes WHERE codigo_estudiante = %s", (username,))
     row = cur.fetchone()
     conn.close()
-    
+
     # Si existe y coincide la contraseña
     if row and row[0] == password:
         return True
@@ -31,6 +31,6 @@ def get_me(codigo_estudiante: str):
             "correo": row[3],
             "cod_estudiante": row[4]
         }
-    
+
     # If login fails, return None.
     return None
