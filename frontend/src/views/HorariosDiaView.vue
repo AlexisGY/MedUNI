@@ -24,7 +24,7 @@ const state = reactive({
   cursor: today.startOf("isoweek"),  // inicio de semana (lunes)
   selected: today,
   availableDates: [],               // Aquí guardaremos las fechas disponibles
-  especialidadId: citaStore.especialidad_id,               // ID de la especialidad (puedes cambiarlo según necesites) (MODIFICABLE)
+  especialidadId: citaStore.especialidadId,               // ID de la especialidad (puedes cambiarlo según necesites) (MODIFICABLE)
 });
 
 function prev()  { state.cursor = state.cursor.subtract(1, state.mode); }

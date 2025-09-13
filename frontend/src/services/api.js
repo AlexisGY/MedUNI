@@ -100,8 +100,6 @@ export async function fetchCitasPorEstudiante(usuarioId) {
   }
 }
 
-
-
 // OTROS ALEXIS
 export async function listarHorarios({ especialidad, fecha }) {
   if (USE_MOCK) {

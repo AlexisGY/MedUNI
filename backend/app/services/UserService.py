@@ -1,9 +1,9 @@
-from app.db import get_connection  # tu conexión psycopg
+from app.db import getConnection  # tu conexión psycopg
 
 
 
-def login_user(username: str, password: str):
-    conn = get_connection()
+def loginUsuario(username: str, password: str):
+    conn = getConnection()
     cur = conn.cursor()
     cur.execute("SELECT codigo_dirce FROM estudiantes WHERE codigo_estudiante = %s", (username,))
     row = cur.fetchone()
@@ -15,8 +15,8 @@ def login_user(username: str, password: str):
     return False
 
 
-def get_me(codigo_estudiante: str):
-    conn = get_connection()
+def getUsuario(codigo_estudiante: str):
+    conn = getConnection()
     cur = conn.cursor()
     cur.execute("SELECT id, nombres, apellidos, correo, codigo_estudiante, codigo_dirce FROM estudiantes WHERE codigo_estudiante = %s", (codigo_estudiante,))
     row = cur.fetchone()
@@ -29,7 +29,7 @@ def get_me(codigo_estudiante: str):
             "nombres": row[1],
             "apellidos": row[2],
             "correo": row[3],
-            "cod_estudiante": row[4]
+            "codEstudiante": row[4]
         }
     
     # If login fails, return None.

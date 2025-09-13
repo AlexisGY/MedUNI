@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, citas_router, especialidades_router, medicos_router, dias_disponibles_router, horarios_router
-from app.db import get_connection
+from app.routers import Auth
+from app.db import getConnection
+from app.routers import CitasRouter, DiasDisponiblesRouter, EspecialidadesRouter, HorariosRouter, MedicosRouter
 
 # routers 
 
@@ -13,16 +14,16 @@ app.add_middleware(
     allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
 )
 # routers 
-app.include_router(auth.router)
-app.include_router(citas_router.router)
-app.include_router(especialidades_router.router)
-app.include_router(medicos_router.router)
-app.include_router(dias_disponibles_router.router)
-app.include_router(horarios_router.router)
+app.include_router(Auth.router)
+app.include_router(CitasRouter.router)
+app.include_router(EspecialidadesRouter.router)
+app.include_router(MedicosRouter.router)
+app.include_router(DiasDisponiblesRouter.router)
+app.include_router(HorariosRouter.router)
 # Verificando la conexión a la base de datos al iniciar la app
 @app.get("/")
 def root():
-    conn = get_connection()
+    conn = getConnection()
     if conn:
         with conn.cursor() as cur:
             cur.execute("SELECT version();")

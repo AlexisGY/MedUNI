@@ -52,21 +52,21 @@
         <!-- Lista de horarios (responsive, limpio y accesible) -->
     <div class="container">
       <div v-if="horarios.length" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-4">
-        <div class="col" v-for="slot in horarios" :key="slot.hora_inicio">
+        <div class="col" v-for="slot in horarios" :key="slot.horaInicio">
           <button
             type="button"
             class="btn w-100 btn-slot"
             :class="{
               occupied: slot.disponibilidad === false,
-              selected: slotSeleccionado?.hora_inicio === slot.hora_inicio
+              selected: slotSeleccionado?.horaInicio === slot.horaInicio
             }"
             :disabled="slot.disponibilidad === false"
             @click="seleccionarHorario(slot)"
-            :aria-pressed="slotSeleccionado?.hora_inicio === slot.hora_inicio"
+            :aria-pressed="slotSeleccionado?.horaInicio === slot.horaInicio"
             :title="slot.disponibilidad === false ? 'Ocupado' : 'Disponible'"
           >
-            <span class="fw-medium">{{ slot.hora_inicio }}</span>
-            <span v-if="slot.hora_fin"> – {{ slot.hora_fin }}</span>
+            <span class="fw-medium">{{ slot.horaInicio }}</span>
+            <span v-if="slot.horaFin"> – {{ slot.horaFin }}</span>
           </button>
         </div>
       </div>
@@ -88,7 +88,7 @@
           <p><strong>Especialidad:</strong> {{ especialidadNombre }}</p>
           <p><strong>Médico:</strong> {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</p>
           <p><strong>Fecha:</strong> {{ fechaFormateada }}</p>
-          <p><strong>Hora:</strong> {{ slotSeleccionado?.hora_inicio }} - {{ slotSeleccionado?.hora_fin }}</p>
+          <p><strong>Hora:</strong> {{ slotSeleccionado?.horaInicio }} - {{ slotSeleccionado?.horaFin }}</p>
           <p><strong>Recuerde llegar 10 minutos antes de su cita.</strong></p>
         </div>
         <div class="modal-footer">
@@ -123,8 +123,8 @@ import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
 const citaStore = useCitaStore();
 
-const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
-const especialidadId = citaStore.especialidad_id;
+const especialidadNombre = citaStore.especialidadNombre || "Especialidad";
+const especialidadId = citaStore.especialidadId;
 const router = useRouter();
 
 const medicos = ref([]);
@@ -156,8 +156,8 @@ onMounted(async () => {
 });
 
 function normalizarSlot(s) {
-  const hora_inicio = s.hora_inicio ?? s.hora ?? '';
-  const hora_fin = s.hora_fin ?? null;
+  const horaInicio = s.horaInicio ?? s.hora ?? '';
+  const horaFin = s.horaFin ?? null;
 
   let disponibilidad = s.disponibilidad;
   if (typeof disponibilidad !== 'boolean') {
@@ -172,8 +172,8 @@ function normalizarSlot(s) {
 
   return {
     ...s,
-    hora_inicio,
-    hora_fin,
+    horaInicio,
+    horaFin,
     disponibilidad,
   };
 }
@@ -223,21 +223,13 @@ function closeConfirmationModal() {
 
 
 async function confirmarCita() {
-  if (!slotSeleccionado.value || !currentDoctor.value) return;
-
-  let horaISO = slotSeleccionado.value.hora_inicio || "";
-
-
-  if (horaISO.length === 5) {
-    horaISO = `${horaISO}:00`;
-  }
 
   const citaData = {
-    estudiante_id: Number(citaStore.estudiante_id),
-    medico_id: Number(currentDoctor.value.id),
-    especialidad_id: Number(especialidadId),
+    estudianteId: Number(citaStore.estudianteId),
+    medicoId: Number(currentDoctor.value.id),
+    especialidadId: Number(especialidadId),
     fecha: fechaStr,
-    hora: horaISO,   
+    hora: slotSeleccionado.value.horaInicio,   
     estado: citaStore.estado ?? "pendiente",
   };
 

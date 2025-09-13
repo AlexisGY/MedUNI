@@ -9,4 +9,4 @@ class AuthenticatedUser(BaseModel):
     nombres: str
     apellidos: str
     correo: str
-    cod_estudiante: str
+    codEstudiante: str
