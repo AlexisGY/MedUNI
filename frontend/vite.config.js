@@ -20,7 +20,7 @@ export default defineConfig(() => ({
     watch: {
       usePolling: true,
     },
-    hmr: { host: 'localhost', clientPort: 5173 },
+    hmr: { host: true, clientPort: 5173 },
     proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } },
     headers: {
       'Content-Security-Policy': "script-src 'self' 'unsafe-inline' http://localhost:5173;",
