@@ -1,4 +1,5 @@
-from app.schemas.Citas import CitaCrear, CitaCreada
+from app.schemas.Citas import CitaCrear
+from fastapi import HTTPException
 from app.db import getConnection  # tu conexión psycopg
 
 def reservarCita(cita: CitaCrear):
@@ -48,10 +49,23 @@ def getCitasReservadas(estudianteId: int):
         for c in citas
     ]
 
-def deleteCita(citaId:int):
+def cancelarCita(citaId:int):
     conn = getConnection()
     cur = conn.cursor()
-    cur.execute()
+    # Validar si la cita existe
+    cur.execute("SELECT id FROM citas WHERE id = %s", (citaId,))
+    cita = cur.fetchone()
+    
+    if cita is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+    
+    # Proceder con la eliminación de la cita
+    cur.execute("DELETE FROM citas WHERE id = %s", (citaId,))
+    conn.commit()
+    conn.close()
+    
+    return {"message": "Cita eliminada exitosamente"}
 
 # Validaciones
 def validarEstudiante(estudianteId: int, cur):

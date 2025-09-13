@@ -99,6 +99,15 @@ export async function fetchCitasPorEstudiante(usuarioId) {
     return []
   }
 }
+export async function cancelarCitaPorId(citaId) {
+  try {
+    const response = await http(`/citas/cancelar_cita/${citaId}`, { method: 'DELETE' })
+    return response  // Devuelve la respuesta exitosa
+  } catch (e) {
+    console.error('Error al cancelar la cita:', e)
+    return { message: 'Error al cancelar la cita' }
+  }
+}
 
 // OTROS ALEXIS
 export async function listarHorarios({ especialidad, fecha }) {

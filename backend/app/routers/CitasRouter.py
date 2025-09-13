@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from app.schemas.Citas import CitaCreada, CitaCrear
-from app.services.CitasService import reservarCita, getCitasReservadas
+from app.services.CitasService import reservarCita, getCitasReservadas, cancelarCita
 from typing import List
 
 router = APIRouter(prefix="/citas", tags=["Citas"])
@@ -36,3 +36,10 @@ def mostrarCitas(estudianteId: int):
         )
 
     return data
+
+@router.delete("/cancelar_cita/{citaId}", response_model=dict)
+async def eliminarCita(citaId: int):
+    try:
+        return cancelarCita(citaId)
+    except HTTPException as e:
+        raise e    
