@@ -19,7 +19,7 @@
     >
       <li
         v-for="c in citas"
-        :key="c.cita_id"
+        :key="c.citaId"
         class="list-group-item list-group-item-action d-flex align-items-center gap-3"
         role="button"
         tabindex="0"
@@ -32,7 +32,7 @@
             {{ formatFecha(c.fecha) }} · {{ formatHora(c.hora) }}
           </div>
           <div class="text-muted small">
-            {{ c.especialidad_nombre }} • {{ c.medico_nombre }}
+            {{ c.especialidadNombre }} • {{ c.medicoNombre }}
           </div>
         </div>
         <span class="badge" :class="estadoBadgeClass(c.estado)">
@@ -53,10 +53,10 @@
 
         <dl class="row mb-3">
           <dt class="col-4 col-sm-3">Especialidad</dt>
-          <dd class="col-8 col-sm-9">{{ citaSeleccionada.especialidad_nombre }}</dd>
+          <dd class="col-8 col-sm-9">{{ citaSeleccionada.especialidadNombre }}</dd>
 
           <dt class="col-4 col-sm-3">Médico</dt>
-          <dd class="col-8 col-sm-9">{{ citaSeleccionada.medico_nombre }}</dd>
+          <dd class="col-8 col-sm-9">{{ citaSeleccionada.medicoNombre }}</dd>
 
           <dt class="col-4 col-sm-3">Fecha</dt>
           <dd class="col-8 col-sm-9">{{ formatFecha(citaSeleccionada.fecha) }}</dd>

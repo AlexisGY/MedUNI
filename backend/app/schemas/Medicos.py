@@ -4,4 +4,4 @@ class Medico(BaseModel):
     id: int
     nombre: str
     apellido: str
-    especialidad_id: int
+    especialidadId: int

@@ -1,19 +1,19 @@
 from pydantic import BaseModel
-from datetime import datetime, date, time
+from datetime import date, time
 
-class CitaCreate(BaseModel):
-    estudiante_id: int
-    medico_id: int
-    especialidad_id: int
+class CitaCrear(BaseModel):
+    estudianteId: int
+    medicoId: int
+    especialidadId: int
     fecha: date
     hora: time
     estado: str # e.g., "pendiente", "confirmada", "cancelada"
 
-class CitaResponse(BaseModel):
-    cita_id: int
-    estudiante_id: int
-    medico_nombre: str
-    especialidad_nombre: str
+class CitaCreada(BaseModel):
+    citaId: int
+    estudianteId: int
+    medicoNombre: str
+    especialidadNombre: str
     fecha: date
     hora: time
     estado: str

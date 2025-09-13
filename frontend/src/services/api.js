@@ -73,8 +73,6 @@ export async function fetchCitasPorEstudiante(usuarioId) {
   return http(`/citas/citas_reservadas/${usuarioId}`);
 }
 
-
-
 // OTROS ALEXIS
 export async function listarHorarios({ especialidad, fecha }) {
   if (USE_MOCK) {

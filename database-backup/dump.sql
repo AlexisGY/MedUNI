@@ -62,7 +62,7 @@ CREATE TABLE horario_medico (
 -- DATOS
 -- =======================
 
-INSERT INTO especialidades (nombre) VALUES 
+INSERT INTO especialidades (nombre) VALUES
 ('Cirugía General'),
 ('Cardiología'),
 ('Ginecología'),
