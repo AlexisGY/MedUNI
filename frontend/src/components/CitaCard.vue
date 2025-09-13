@@ -72,7 +72,7 @@
           <button
             class="btn btn-outline-danger"
             v-if="citaSeleccionada.estado !== 'cancelada'"
-            @click="$emit('cancel', citaSeleccionada)"
+            @click="cancelarCita(citaSeleccionada)"
           >
             Cancelar
           </button>
@@ -83,6 +83,7 @@
 </template>
 
 <script setup>
+import { cancelarCitaPorId } from '@/services/api'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -133,4 +134,20 @@ function estadoBadgeClass(estado) {
     default:           return 'badge badge-secondary'
   }
 }
+
+// Función para cancelar la cita
+async function cancelarCita(cita) {
+  try {
+    const response = await cancelarCitaPorId(cita.citaId)  // Llama a la función del API para cancelar la cita
+    emit('cancel', cita.citaId)  // Emitir el evento para actualizar la vista
+  
+    citaSeleccionada.value = null  // Limpiar la cita seleccionada
+
+
+  } catch (error) {
+    console.error('Error al cancelar la cita:', error)
+    // Aquí puedes mostrar un mensaje de error si lo deseas
+  }
+}
+
 </script>

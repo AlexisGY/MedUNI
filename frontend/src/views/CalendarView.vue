@@ -91,6 +91,11 @@ function isOtherMonth(d)   { return state.mode==="month" && !d.isSame(state.curs
 function isDayReserved(d) {
   return diasReservados.value.includes(d.date()) && d.month() === state.cursor.month(); // Verifica que el mes coincida; // Verifica si el día está en la lista de días reservados
 }
+
+function handleCancelCita(citaId) {
+  citas.value = citas.value.filter(c => c.citaId !== citaId)
+}
+  
 </script>
 
 <template>
@@ -102,7 +107,7 @@ function isDayReserved(d) {
 
       <div class="mb-4">
       <!-- Lista de citas -->
-        <CitasCard :citas="citas" />
+        <CitasCard :citas="citas" @cancel="handleCancelCita" />
       </div>
 
     <!-- Controls -->

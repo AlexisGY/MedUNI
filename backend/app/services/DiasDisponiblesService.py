@@ -1,7 +1,7 @@
 from app.db import getConnection
 from datetime import date, timedelta
 
-def listarDiasSemana(especialidadId, semanas=2):
+def listarDiasSemana(especialidadId, semanas=1):
     """
     Retorna los días de la semana (o semanas siguientes) con su estado disponible/no disponible.
     - especialidad_id: id de la especialidad
