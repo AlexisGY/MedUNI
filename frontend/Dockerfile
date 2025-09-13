@@ -1,20 +1,14 @@
-# Usa una imagen base de Node.js
+# frontend/Dockerfile
 FROM node:20-slim
 
-# Configura el directorio de trabajo
 WORKDIR /app
 
-# Copia los archivos del frontend
-COPY ./frontend/ /app/
+# Copiamos solo package.json para instalar deps una vez
+COPY ./package*.json ./
 
-# Instala las dependencias
-RUN npm install
+RUN npm ci
 
-# Compila la aplicación
-RUN npm run build
-
-# Expone el puerto para el frontend
+# Montaremos el código con volumes desde docker-compose
 EXPOSE 5173
 
-# Ejecuta el servidor de Vue.js
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "--", "--host"]

@@ -7,16 +7,38 @@ async function http(path, opts = {}) {
     ...opts,
   })
 
-  const raw = await res.text() // leemos una sola vez
-  // Intentamos parsear (si es JSON válido)
+  const raw = await res.text()
   let data = null
-  if (raw) {
-    try { data = JSON.parse(raw) } catch { /* texto plano */ }
-  }
+  if (raw) { try { data = JSON.parse(raw) } catch {} }
 
   if (!res.ok) {
-    const msg = (data && (data.detail || data.message || data.error)) || raw || 'Error de servidor'
-    throw new Error(msg)
+    let msg = 'Error de servidor'
+
+    if (data) {
+      if (typeof data === 'string') {
+        msg = data
+      } else if (typeof data.detail === 'string') {
+        // FastAPI: detail como string
+        msg = data.detail
+      } else if (Array.isArray(data.detail)) {
+        // FastAPI: detail como array de validaciones
+        msg = data.detail
+          .map(e => e?.msg || e?.message || (e?.loc ? e.loc.join('.') : JSON.stringify(e)))
+          .join(' | ')
+      } else if (data.message || data.error) {
+        msg = data.message || data.error
+      } else {
+        // último recurso: stringify
+        msg = JSON.stringify(data)
+      }
+    } else if (raw) {
+      msg = raw
+    } else {
+      msg = `${res.status} ${res.statusText}`
+    }
+
+    console.error('HTTP ERROR', res.status, path, msg, data)
+    throw new Error(String(msg)) // <-- asegurar string
   }
 
   return data
@@ -68,9 +90,14 @@ export async function reservarCita(citaData) {
     body: JSON.stringify(citaData),
   });
 }
-  // CITAS DEL USUARIO JHARO_BACKEND
+  // CITAS DEL USUARIO
 export async function fetchCitasPorEstudiante(usuarioId) {
-  return http(`/citas/citas_reservadas/${usuarioId}`);
+  try {
+    return await http(`/citas/citas_reservadas/${usuarioId}`)
+  } catch (e) {
+    if (e.message?.toLowerCase?.().includes('no hay citas')) return [] 
+    return []
+  }
 }
 
 // OTROS ALEXIS
