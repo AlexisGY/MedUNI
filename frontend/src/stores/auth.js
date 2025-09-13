@@ -10,23 +10,36 @@ export const useAuth = defineStore('auth', {
   }),
   getters: { isAuth: (s) => !!s.token },
   actions: {
-    async login(username, password) { // Cambiado de 'email' a 'codigo'
+    async login(username, password) {
       this.loading = true; this.error = null
       try {
-        // Envia el 'codigo' y 'password' a la API
-        const { token, user } = await api.login({ username, password })
-        this.token = token; this.user = user
+        const resp = await api.login({ username, password })
+
+        // Acepta { token, user } o { access_token, user }
+        const token = resp?.token ?? resp?.access_token
+        const user  = resp?.user ?? null
+
+        if (!token) throw new Error('Respuesta de login inválida')
+
+        this.token = token
+        this.user  = user
         localStorage.setItem('token', token)
         localStorage.setItem('user', JSON.stringify(user))
+        return true
       } catch (e) {
         this.error = e.message || 'Credenciales inválidas'
-        throw e
-      } finally { this.loading = false }
+        return false
+      } finally {
+        this.loading = false
+      }
     },
+
     logout() {
-      this.token = null; this.user = null
+      this.token = null
+      this.user = null
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      // (redirige desde el componente: router.replace({ name: 'login' }))
     },
   },
 })
