@@ -27,6 +27,7 @@
           <div class="col-12 col-sm-6 col-md-6 col-lg-4" v-for="esp in especialidadesFiltradas" :key="esp.id">
             <EspecialidadCard
               :nombre="esp.nombre"
+              :especialidadId="esp.id"
               @ver-horarios="verHorarios(esp)"
             />
           </div>
