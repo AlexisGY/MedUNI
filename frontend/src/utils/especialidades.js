@@ -63,6 +63,8 @@ export function getEspecialidadImageById(id) {
     if (images[key]) return images[key];
   }
 
-  // Fallback genérico
-  return images['/src/assets/especialidades/fallback.png'] || '';
+  // Fallback único en SVG (según preferencia actual)
+  const fallbackSvg = '/src/assets/especialidades/fallback.svg';
+  if (images[fallbackSvg]) return images[fallbackSvg];
+  return '';
 }

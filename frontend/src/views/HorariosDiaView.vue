@@ -176,7 +176,8 @@ function handleDayClick(day) {
   .especialidad-hero{
     position: relative;
     width: min(100%, 720px);
-    height: 180px;
+    aspect-ratio: 16 / 5; 
+    height: auto;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 2px 16px rgba(0,0,0,.08);
@@ -210,6 +211,16 @@ function handleDayClick(day) {
   .cell { aspect-ratio: 1 / 1; } /* mantiene celdas cuadradas en mes */
   button.border-2 { border-width: 2px !important; }
   .bg-secondary {
-  background-color: #f1f1f1 !important; /* Gris claro para los días no listados */
+  background-color: #f1f1f1 !important; 
 }
+
+  @media (min-width: 768px) {
+    .especialidad-hero { width: min(100%, 840px); }
+  }
+  @media (min-width: 992px) {
+    .especialidad-hero { width: min(100%, 960px); }
+  }
+  @media (min-width: 1200px) {
+    .especialidad-hero { width: min(100%, 1100px); }
+  }
 </style>

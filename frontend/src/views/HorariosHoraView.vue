@@ -13,7 +13,7 @@
         >&lt;</button>
 
         <div class="text-center">
-          <h2 class="h6 fw-bold mb-1">{{ especialidadNombre }}</h2>
+          <h2 class="h6 fw-bold mb-1">{{ especialidadNombreDisplay }}</h2>
           <p class="mb-0 small" style="opacity:.95;">
             {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}
           </p>
@@ -96,13 +96,12 @@
         </div>
       </template>
 
-      <div class="confirm-modal-content">
+      <div class="confirm-modal-content text-center">
         <div class="mb-2">
           <div class="d-flex align-items-start gap-2">
             <span class="bullet-icon" aria-hidden="true"><i :class="especialidadIconClass"></i></span>
             <div>
-              <div class="fw-bold">{{ especialidadNombreDisplay }}</div>
-              <div class="text-muted small">{{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</div>
+              <div class="fw-bold">{{ especialidadNombreDisplay }} - {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</div>
             </div>
           </div>
         </div>
