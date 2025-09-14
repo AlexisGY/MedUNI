@@ -14,16 +14,19 @@ export default defineConfig(() => ({
     },
   },
   server: {
-    host: true,  
+    host: true,
     port: 5173,
     strictPort: true,
+    proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } },
     watch: {
       usePolling: true,
+      interval: 100
     },
-    hmr: { host: true, clientPort: 5173 },
-    proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } },
-    headers: {
-      'Content-Security-Policy': "script-src 'self' 'unsafe-inline' http://localhost:5173;",
+    hmr: {
+      host: 'localhost',   
+      clientPort: 5173,   
+      protocol: 'ws'     
     }
   }
+
 }))

@@ -1,5 +1,4 @@
 // Mapeos y utilidades para Especialidades
-// Fuente unificada para nombres e íconos (Bootstrap Icons)
 
 export const ICONS_BY_ID = {
   1: 'bi bi-scissors',                 // Cirugía General
@@ -11,7 +10,7 @@ export const ICONS_BY_ID = {
   7: 'bi bi-chat-square-heart-fill',   // Psicología 
   8: 'bi bi-ear-fill',                 // Otorrinolaringología
   9: 'bi bi-emoji-laughing-fill',      // Odontología 
-  10: 'bi bi-person-hearts',           // Psiquiatría (temporal)
+  10: 'bi bi-person-hearts',           // Psiquiatría
   11: 'bi bi-flask-fill',              // Laboratorio Clínico
   12: 'bi bi-lungs-fill',              // Neumología 
   13: 'bi bi-hospital-fill',           // Medicina Interna/Familia/General 
@@ -43,4 +42,27 @@ export function getEspecialidadIconClassById(id) {
 
 export function getEspecialidadNombreById(id) {
   return NOMBRES_BY_ID[id] || 'Especialidad';
+}
+
+export function getEspecialidadImageById(id) {
+  // Carga todas las imágenes disponibles y retorna la URL (string) directamente
+  const images = import.meta.glob('/src/assets/especialidades/*.{png,jpg,jpeg,svg}', {
+    eager: true,
+    import: 'default',
+  });
+
+  // Probar con varias extensiones en orden de preferencia
+  const candidates = [
+    `/src/assets/especialidades/${id}.png`,
+    `/src/assets/especialidades/${id}.jpg`,
+    `/src/assets/especialidades/${id}.jpeg`,
+    `/src/assets/especialidades/${id}.svg`,
+  ];
+
+  for (const key of candidates) {
+    if (images[key]) return images[key];
+  }
+
+  // Fallback genérico
+  return images['/src/assets/especialidades/fallback.png'] || '';
 }
