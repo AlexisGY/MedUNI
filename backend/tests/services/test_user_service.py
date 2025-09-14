@@ -1,7 +1,6 @@
 import pytest
-from app.services import user_service
+from app.services import UserService
 
-# Tests para login_user()
 @pytest.mark.parametrize(
     "username,password,expected",
     [
@@ -14,11 +13,9 @@ from app.services import user_service
     ]
 )
 def test_login_user(username, password, expected):
-    result = user_service.login_user(username, password)
+    result = UserService.login_user(username, password)
     assert result == expected
 
-
-# Tests para get_me()
 @pytest.mark.parametrize(
     "codigo,exists",
     [
@@ -29,7 +26,7 @@ def test_login_user(username, password, expected):
     ]
 )
 def test_get_me(codigo, exists):
-    result = user_service.get_me(codigo)
+    result = UserService.get_me(codigo)
 
     if exists:
         assert result is not None

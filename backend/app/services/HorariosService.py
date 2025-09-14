@@ -1,14 +1,14 @@
-from app.db import get_connection  # tu conexión psycopg
+from app.db import getConnection  # tu conexión psycopg
 from datetime import date, timedelta
 
 
-def gen_horarios(dia: date, medico_id: int):
+def genHorarios(dia: date, medicoId: int):
     """
     Genera los horarios disponibles para un médico en un día específico.
     - dia: fecha específica
     - medico_id: id del médico
     """
-    conn = get_connection()
+    conn = getConnection()
     cursor = conn.cursor()
     # Definir el rango de horas (por ejemplo, de 08:00 a 17:00)
     query ="""
@@ -18,7 +18,7 @@ def gen_horarios(dia: date, medico_id: int):
             ON me.especialidad_id = de.especialidad_id
         WHERE EXTRACT(ISODOW FROM %s::date) = de.dia_semana
         AND me.id = %s"""
-    cursor.execute(query, (dia, medico_id))
+    cursor.execute(query, (dia, medicoId))
     horas_limte = cursor.fetchall()
     hora_inicio = horas_limte[0][0]
     hora_final = horas_limte[0][1]
@@ -26,7 +26,7 @@ def gen_horarios(dia: date, medico_id: int):
     #Por ahora se manejará una duración de cita de 30 minutos.
 
 
-    conn = get_connection()
+    conn = getConnection()
     cursor = conn.cursor()
     query = """
                 WITH horarios AS (
@@ -51,9 +51,9 @@ def gen_horarios(dia: date, medico_id: int):
             AND c.hora = hora_inicio::time  -- Verificamos si ya existe una cita a esa hora
         ORDER BY hora_inicio;
     """
-    cursor.execute(query, (hora_inicio, hora_final, medico_id, dia))
+    cursor.execute(query, (hora_inicio, hora_final, medicoId, dia))
     horarios = cursor.fetchall()
     cursor.close()
     conn.close()
 
-    return [{"hora_inicio": horario[0], "hora_fin": horario[1],"disponibilidad": horario[2]} for horario in horarios]
+    return [{"horaInicio": horario[0], "horaFin": horario[1],"disponibilidad": horario[2]} for horario in horarios]

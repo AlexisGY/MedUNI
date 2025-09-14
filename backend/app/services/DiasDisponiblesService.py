@@ -1,14 +1,14 @@
-from app.db import get_connection
+from app.db import getConnection
 from datetime import date, timedelta
 
-def listar_dias_semana(especialidad_id, semanas=2):
+def listarDiasSemana(especialidadId, semanas=1):
     """
     Retorna los días de la semana (o semanas siguientes) con su estado disponible/no disponible.
     - especialidad_id: id de la especialidad
     - semanas: número de semanas a generar (default 1 = semana actual)
     """
 
-    conn = get_connection()
+    conn = getConnection()
     cursor = conn.cursor()
 
     # Calcular rango de fechas
@@ -38,7 +38,7 @@ def listar_dias_semana(especialidad_id, semanas=2):
 		GROUP BY r.fecha
         ORDER BY r.fecha
     """
-    cursor.execute(query, (inicio_semana, fin_semana, especialidad_id))
+    cursor.execute(query, (inicio_semana, fin_semana, especialidadId))
     dias = cursor.fetchall()
     cursor.close()
     conn.close()

@@ -1,14 +1,14 @@
-from app.db import get_connection
+from app.db import getConnection
 
-def listar_medicos(id_especialidad: int):
-    conn = get_connection()
+def listarMedicos(especialidadId: int):
+    conn = getConnection()
     cursor = conn.cursor()
     query = """
         SELECT id, nombres, apellidos, especialidad_id
         FROM medicos
         WHERE especialidad_id = %s
     """
-    cursor.execute(query, (id_especialidad,))
+    cursor.execute(query, (especialidadId,))
     medicos = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -16,9 +16,9 @@ def listar_medicos(id_especialidad: int):
     return [
         {
             "id": m[0],
-            "nombres": m[1],
-            "apellidos": m[2],
-            "especialidad_id": m[3]
+            "nombre": m[1],
+            "apellido": m[2],
+            "especialidadId": m[3]
 
         }
         for m in medicos

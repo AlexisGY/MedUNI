@@ -1,7 +1,7 @@
-from app.db import get_connection  # tu conexión psycopg
+from app.db import getConnection  # tu conexión psycopg
 
-def listar_especialidades():
-    conn = get_connection()
+def listarEspecialidades():
+    conn = getConnection()
     cursor = conn.cursor()
     cursor.execute("SELECT id, nombre, estado FROM especialidades WHERE estado = TRUE")
     especialidades = cursor.fetchall()

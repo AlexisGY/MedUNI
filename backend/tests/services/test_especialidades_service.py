@@ -1,7 +1,6 @@
 import pytest
-from app.services.especialidades_service import listar_especialidades
+from app.services.EspecialidadesService import listar_especialidades
 
-# Tests para listar_especialidades()
 @pytest.mark.parametrize("expected_keys, expected_count", [(
     ["id", "nombre", "estado"], 15)],
 )

@@ -1,7 +1,6 @@
 import pytest
-from app.services.medicos_service import listar_medicos
+from app.services.MedicosService import listar_medicos
 
-# Tests para listar_medicos()
 @pytest.mark.parametrize(
     "especialidad_id, expected_count",
     [

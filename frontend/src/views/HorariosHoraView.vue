@@ -52,21 +52,21 @@
         <!-- Lista de horarios (responsive, limpio y accesible) -->
     <div class="container">
       <div v-if="horarios.length" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-4">
-        <div class="col" v-for="slot in horarios" :key="slot.hora_inicio">
+        <div class="col" v-for="slot in horarios" :key="slot.horaInicio">
           <button
             type="button"
             class="btn w-100 btn-slot"
             :class="{
               occupied: slot.disponibilidad === false,
-              selected: slotSeleccionado?.hora_inicio === slot.hora_inicio
+              selected: slotSeleccionado?.horaInicio === slot.horaInicio
             }"
             :disabled="slot.disponibilidad === false"
             @click="seleccionarHorario(slot)"
-            :aria-pressed="slotSeleccionado?.hora_inicio === slot.hora_inicio"
+            :aria-pressed="slotSeleccionado?.horaInicio === slot.horaInicio"
             :title="slot.disponibilidad === false ? 'Ocupado' : 'Disponible'"
           >
-            <span class="fw-medium">{{ slot.hora_inicio }}</span>
-            <span v-if="slot.hora_fin"> – {{ slot.hora_fin }}</span>
+            <span class="fw-medium">{{ slot.horaInicio }}</span>
+            <span v-if="slot.horaFin"> – {{ slot.horaFin }}</span>
           </button>
         </div>
       </div>
@@ -78,25 +78,57 @@
     </div>
 
     <!-- Modal de confirmación -->
-    <div v-if="showConfirmationModal" class="modal-backdrop">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h3>Reserva de cita</h3>
-          <button class="btn-close" @click="closeConfirmationModal">✖</button>
+    <BaseModal
+      v-model:open="showConfirmationModal"
+      aria-label="Confirmar reserva"
+      :close-on-esc="true"
+      :close-on-overlay="false"
+    >
+      <template #header="{ close }">
+        <div
+          class="modal-title-bar"
+          style="background: var(--color-primary); color: var(--color-surface); padding: 10px 16px; width: 100%; display: flex; align-items: center; justify-content: space-between; border-top-left-radius: 12px;"
+        >
+          <h2 class="m-0 h6">Reserva de cita</h2>
+          <button type="button" class="icon-btn" @click="close" aria-label="Cerrar" style="color: var(--color-surface);">
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
-        <div class="modal-body">
-          <p><strong>Especialidad:</strong> {{ especialidadNombre }}</p>
-          <p><strong>Médico:</strong> {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</p>
-          <p><strong>Fecha:</strong> {{ fechaFormateada }}</p>
-          <p><strong>Hora:</strong> {{ slotSeleccionado?.hora_inicio }} - {{ slotSeleccionado?.hora_fin }}</p>
-          <p><strong>Recuerde llegar 10 minutos antes de su cita.</strong></p>
+      </template>
+
+      <div class="confirm-modal-content">
+        <div class="mb-2">
+          <div class="d-flex align-items-start gap-2">
+            <span class="bullet-icon" aria-hidden="true"><i :class="especialidadIconClass"></i></span>
+            <div>
+              <div class="fw-bold">{{ especialidadNombreDisplay }}</div>
+              <div class="text-muted small">{{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}</div>
+            </div>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeConfirmationModal">Cancelar</button>
-          <button class="btn btn-primary" @click="confirmarCita">Confirmar cita</button>
+
+        <div class="mb-2 d-flex align-items-start gap-2">
+          <span class="bullet-icon" aria-hidden="true"><i class="bi bi-calendar3"></i></span>
+          <div>{{ fechaFormateada }}</div>
+        </div>
+
+        <div class="mb-2 d-flex align-items-start gap-2">
+          <span class="bullet-icon" aria-hidden="true"><i class="bi bi-clock"></i></span>
+          <div>{{ slotSeleccionado?.horaInicio }} - {{ slotSeleccionado?.horaFin }}</div>
+        </div>
+
+        <div class="mt-3 d-flex align-items-start gap-2 text-muted small">
+          <span class="bullet-icon text-danger" aria-hidden="true"><i class="bi bi-exclamation-circle"></i></span>
+          <div>Recuerde llegar 10 minutos antes de su cita</div>
+        </div>
+
+        <div class="mt-3">
+          <button type="button" class="btn w-100 fw-bold btn-primary-uni" @click="confirmarCita">Confirmar cita</button>
         </div>
       </div>
-    </div>
+
+      <template #footer></template>
+    </BaseModal>
 
     <!-- Botón continuar -->
     <div class="container py-4 mt-auto">
@@ -118,13 +150,15 @@ import { ref, computed, onMounted } from "vue";
 import { fetchMedicosPorEspecialidad, fetchHorariosPorMedico, reservarCita } from "@/services/api";
 import { useCitaStore } from "@/stores/reserva_cita";
 import { useRoute, useRouter } from "vue-router";
+import BaseModal from "@/components/BaseModal.vue";
+import { getEspecialidadIconClassById, getEspecialidadNombreById } from "@/utils/especialidades";
 
 
 const route = useRoute();
 const citaStore = useCitaStore();
 
-const especialidadNombre = citaStore.especialidad_nombre || "Especialidad";
-const especialidadId = citaStore.especialidad_id;
+const especialidadNombre = citaStore.especialidadNombre || "Especialidad";
+const especialidadId = citaStore.especialidadId;
 const router = useRouter();
 
 const medicos = ref([]);
@@ -137,6 +171,14 @@ const fechaAFormato = fechaStr ? new Date(`${fechaStr}T00:00:00`) : new Date();
 const showConfirmationModal = ref(false);
 
 const currentDoctor = computed(() => medicos.value[currentDoctorIndex.value]);
+const especialidadIconClass = computed(() => getEspecialidadIconClassById(Number(especialidadId)));
+
+// Nombre de especialidad , con preferencia por el nombre del store
+const especialidadNombreDisplay = computed(() => (
+  especialidadNombre && especialidadNombre !== 'Especialidad'
+    ? especialidadNombre
+    : getEspecialidadNombreById(Number(especialidadId))
+));
 
 const fechaFormateada = computed(() =>
   fechaAFormato.toLocaleDateString("es-PE", {
@@ -156,8 +198,8 @@ onMounted(async () => {
 });
 
 function normalizarSlot(s) {
-  const hora_inicio = s.hora_inicio ?? s.hora ?? '';
-  const hora_fin = s.hora_fin ?? null;
+  const horaInicio = s.horaInicio ?? s.hora ?? '';
+  const horaFin = s.horaFin ?? null;
 
   let disponibilidad = s.disponibilidad;
   if (typeof disponibilidad !== 'boolean') {
@@ -172,8 +214,8 @@ function normalizarSlot(s) {
 
   return {
     ...s,
-    hora_inicio,
-    hora_fin,
+    horaInicio,
+    horaFin,
     disponibilidad,
   };
 }
@@ -223,21 +265,13 @@ function closeConfirmationModal() {
 
 
 async function confirmarCita() {
-  if (!slotSeleccionado.value || !currentDoctor.value) return;
-
-  let horaISO = slotSeleccionado.value.hora_inicio || "";
-
-
-  if (horaISO.length === 5) {
-    horaISO = `${horaISO}:00`;
-  }
 
   const citaData = {
-    estudiante_id: Number(citaStore.estudiante_id),
-    medico_id: Number(currentDoctor.value.id),
-    especialidad_id: Number(especialidadId),
+    estudianteId: Number(citaStore.estudianteId),
+    medicoId: Number(currentDoctor.value.id),
+    especialidadId: Number(especialidadId),
     fecha: fechaStr,
-    hora: horaISO,   
+    hora: slotSeleccionado.value.horaInicio,   
     estado: citaStore.estado ?? "pendiente",
   };
 
@@ -300,25 +334,31 @@ async function confirmarCita() {
 .legend-dot.selected{ background: var(--color-primary); border-color: var(--color-primary); }
 .legend-dot.occupied{ background: var(--color-surface-alt); }
 
-/* Modal */
-.modal-backdrop{
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.45);
-  display: grid; place-items: center;
-  z-index: 1050;
+.confirm-modal-content{
+  padding: 12px 16px 16px;
 }
-.modal-container{
-  width: min(520px, 92vw);
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,.25);
-  overflow: hidden;
+.confirm-modal-content .bullet-icon{
+  width: 20px; display: inline-flex; align-items: center; justify-content: center;
 }
-.modal-header, .modal-footer{ padding: 12px 16px; }
-.modal-body{ padding: 8px 16px; }
-.btn-close{
-  border: none; background: transparent; font-size: 18px; line-height: 1;
+
+/* Barra de título estilo mockup */
+.modal-title-bar{
+  background: var(--color-primary);
+  color: var(--color-surface);
+  padding: 10px 16px;
+  border-top-left-radius: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title-bar .icon-btn{
+  color: var(--color-surface);
+}
+
+/* Botón confirmar más redondeado */
+.confirm-modal-content .btn-primary-uni{
+  border-radius: 10px;
 }
 
 </style>
