@@ -4,7 +4,6 @@ import { reactive, computed, onMounted, watch } from "vue";
 import dayjs from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import "dayjs/locale/es";
-import uniLogo from "../assets/logo-uni.png";
 import { getEspecialidadImageById, getEspecialidadNombreById } from '@/utils/especialidades';
 
 const imagenEspecialidad = computed(() => getEspecialidadImageById(state.especialidadId));
@@ -145,6 +144,22 @@ function handleDayClick(day) {
       </button>
     </div>
 
+    <!-- Legend -->
+    <div class="d-flex align-items-center gap-3 mb-2 small" aria-hidden="true">
+      <div class="d-flex align-items-center gap-2">
+        <span class="legend-swatch legend-available"></span>
+        <span>Disponible</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="legend-swatch legend-unavailable"></span>
+        <span>No disponible</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="legend-swatch legend-unlisted"></span>
+        <span>No listado</span>
+      </div>
+    </div>
+
     <!-- Week headers -->
     <div class="row g-1 text-center text-secondary mb-1 small">
       <div class="col" v-for="w in weekLabels" :key="w">{{ w }}</div>
@@ -154,16 +169,14 @@ function handleDayClick(day) {
     <div class="grid">
       <div v-for="d in cells" :key="d.valueOf()" class="col">
         <button
-          class="w-100 border rounded-3 py-3 position-relative"
-          :class="{
-            'bg-light text-muted': isOtherMonth(d),
-            'border-2 border-primary': isSameDay(d, state.selected),
-            'bg-success': isAvailable(d),     // Día disponible
-            'bg-danger': !isAvailable(d),      // Día no disponible
-            'bg-secondary': isAvailable(d) === 'no listado' // Día no listado en gris
-          }"
+          class="w-100 border rounded-3 py-3 position-relative day-btn"
+          :class="[
+            isOtherMonth(d) ? 'day--other-month' : '',
+            isSameDay(d, state.selected) ? 'day--selected' : '',
+            isAvailable(d) === true ? 'day--available' : (isAvailable(d) === false ? 'day--unavailable' : 'day--unlisted')
+          ]"
           @click="handleDayClick(d)"
-
+          :aria-label="`Día ${d.format('D/MM/YYYY')} - ${isAvailable(d) === true ? 'Disponible' : (isAvailable(d) === false ? 'No disponible' : 'No listado')}`"
         >
           <span class="small">{{ d.date() }}</span>
         </button>
@@ -208,11 +221,40 @@ function handleDayClick(day) {
   }
   .calendar-wrapper { width: min(100%, 1100px); margin: 0 auto; }
   .grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .25rem; }
-  .cell { aspect-ratio: 1 / 1; } /* mantiene celdas cuadradas en mes */
-  button.border-2 { border-width: 2px !important; }
-  .bg-secondary {
-  background-color: #f1f1f1 !important; 
-}
+
+  /* Legend swatches */
+  .legend-swatch { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid rgba(0,0,0,0.1); }
+  .legend-available { background: #d4f1db; border-color: #7fcf97; }
+  .legend-unavailable { background: #ffd9d4; border-color: #ff9e95; }
+  .legend-unlisted { background: #ececec; border-color: #d6d6d6; }
+
+  /* Day button state colors (accessible tints) */
+  .day-btn { transition: background-color .15s ease, border-color .15s ease; }
+  .day--available {
+    background-color: #d4f1db; /* más notorio */
+    color: #0f5132; /* texto oscuro legible */
+    border-color: #7fcf97;
+  }
+  .day--available:hover { background-color: #c6ebcf; border-color: #69c788; }
+
+  .day--unavailable {
+    background-color: #ffd9d4; /* más notorio */
+    color: #842029;
+    border-color: #ff9e95;
+  }
+  .day--unavailable:hover { background-color: #ffcbc4; border-color: #ff7f73; }
+
+  .day--unlisted {
+    background-color: #ececec;
+    color: #6b7280;
+    border-color: #d6d6d6;
+  }
+
+  .day--other-month { opacity: .7; }
+
+  .day--selected { border-width: 2px !important; border-color: var(--color-primary) !important; box-shadow: 0 0 0 2px rgba(13,110,253,.15) inset; }
+
+  /* sin estado disabled para mantenerlo simple */
 
   @media (min-width: 768px) {
     .especialidad-hero { width: min(100%, 840px); }

@@ -2,11 +2,11 @@
 <template>
   <div class="d-flex flex-column min-vh-100" style="background: var(--color-surface); color: var(--color-text);">
     <!-- Especialidad y doctor actual -->
-    <section class="py-3 rounded-3" style="background: var(--color-primary); color: var(--color-surface);">
+  <section class="py-3 rounded-3 header-band">
       <div class="container d-flex justify-content-between align-items-center">
         <button
           type="button"
-          class="btn btn-light btn-sm"
+          class="btn btn-nav btn-sm"
           :disabled="currentDoctorIndex === 0"
           @click="prevDoctor"
           aria-label="Doctor anterior"
@@ -21,7 +21,7 @@
 
         <button
           type="button"
-          class="btn btn-light btn-sm"
+          class="btn btn-nav btn-sm"
           :disabled="currentDoctorIndex === medicos.length - 1"
           @click="nextDoctor"
           aria-label="Siguiente doctor"
@@ -85,10 +85,7 @@
       :close-on-overlay="false"
     >
       <template #header="{ close }">
-        <div
-          class="modal-title-bar"
-          style="background: var(--color-primary); color: var(--color-surface); padding: 10px 16px; width: 100%; display: flex; align-items: center; justify-content: space-between; border-top-left-radius: 12px;"
-        >
+        <div class="modal-title-bar">
           <h2 class="m-0 h6">Reserva de cita</h2>
           <button type="button" class="icon-btn" @click="close" aria-label="Cerrar" style="color: var(--color-surface);">
             <i class="bi bi-x-lg"></i>
@@ -130,7 +127,7 @@
     </BaseModal>
 
     <!-- Botón continuar -->
-    <div class="container py-4 mt-auto">
+    <div class="container py-4 mt-4 confirm-cta">
       <button
         type="button"
         class="btn w-100 fw-bold btn-primary-uni"
@@ -224,7 +221,6 @@ async function cargarHorarios() {
   if (!currentDoctor.value) return;
   const raw = await fetchHorariosPorMedico(fechaStr, currentDoctor.value.id);
 
-  console.log('Ejemplo de slot desde API:', raw?.[0]);
 
   horarios.value = raw.map(normalizarSlot);
 
@@ -288,6 +284,23 @@ async function confirmarCita() {
 </script>
 
 <style scoped>
+.header-band{ background: var(--color-primary); color: var(--color-surface); }
+.btn-nav{
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid rgba(255,255,255,.5);
+}
+.btn-nav:hover,
+.btn-nav:focus{
+  background: rgba(255,255,255,.15);
+  color: var(--color-surface);
+  border-color: rgba(255,255,255,.75);
+}
+.btn-nav:disabled{
+  opacity: .6;
+  color: #eee;
+  background: rgba(255,255,255,.1);
+}
 .btn-primary-uni{
   background: var(--color-primary);
   color: var(--color-surface);
@@ -310,7 +323,12 @@ async function confirmarCita() {
   color: var(--color-text);
   font-weight: 500;
 }
-.btn-slot:hover{ background: var(--color-surface-alt); }
+/* Hover básico para slot; se puede ajustar por tema */
+.btn.btn-slot:hover{ background: var(--color-surface-alt); }
+.btn-slot.selected:hover{ filter: brightness(0.95); }
+/* Ocupado no cambia con hover */
+.btn-slot.occupied:hover{ background: var(--color-surface-alt); }
+.btn-slot:focus-visible{ outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .btn-slot.occupied{
   background: var(--color-surface-alt);
   color: #9aa0a6;
@@ -359,5 +377,9 @@ async function confirmarCita() {
 .confirm-modal-content .btn-primary-uni{
   border-radius: 10px;
 }
+
+/* CTA spacing and centering */
+.confirm-cta{ display: flex; justify-content: center; }
+.confirm-cta .btn{ max-width: 520px; }
 
 </style>
