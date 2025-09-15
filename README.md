@@ -76,6 +76,15 @@ docker compose up --build
 
 ---
 
+## Usuarios de prueba
+Usa estas credenciales para iniciar sesión (según backend: username = código_estudiante, password = código_dirce):
+
+- Jharo Paucarcaja Ramos — usuario: 20234044I — contraseña: 111111
+- Alexis Garay — usuario: 20244017D — contraseña: 111111
+- Rolly Mamani — usuario: 20240010E — contraseña: 111111
+
+---
+
 ## Variables de entorno (Backend)
 El backend usa variables para conectar a Postgres (cargadas con `python-dotenv`).
 
