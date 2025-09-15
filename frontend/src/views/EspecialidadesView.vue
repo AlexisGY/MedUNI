@@ -1,15 +1,14 @@
 <template>
-  <div class="min-h-screen bg-white flex flex-col">
+  <div class="d-flex flex-column min-vh-100 bg-white">
 
-    <main class="flex-1">
-      <section class="max-w-screen-xl mx-auto px-4 py-8">
-        <p class="text-center text-gray-600">
+    <main class="flex-grow-1">
+      <section class="container py-4">
+        <p class="text-center text-muted">
           Elige la especialidad o el doctor para reservar la cita
         </p>
 
-        <!-- Reutilizando SearchFiltro -->
         <SearchFiltro
-          class="mt-4"
+          class="mt-3"
           :options="especialidades"
           label-key="nombre"
           v-model:search="search"
@@ -18,11 +17,9 @@
           all-label="Todas las especialidades"
         />
 
-        <!-- estados -->
         <div v-if="loading" class="mt-3 text-center text-muted">Cargando especialidades…</div>
         <div v-else-if="error" class="mt-3 text-center text-danger">{{ error }}</div>
 
-        <!-- grid de cards -->
         <div v-else class="row g-4 mt-1">
           <div class="col-12 col-sm-6 col-md-6 col-lg-4" v-for="esp in especialidadesFiltradas" :key="esp.id">
             <EspecialidadCard

@@ -55,16 +55,16 @@ def cancelarCita(citaId:int):
     # Validar si la cita existe
     cur.execute("SELECT id FROM citas WHERE id = %s", (citaId,))
     cita = cur.fetchone()
-    
+
     if cita is None:
         conn.close()
         raise HTTPException(status_code=404, detail="Cita no encontrada")
-    
+
     # Proceder con la eliminación de la cita
     cur.execute("DELETE FROM citas WHERE id = %s", (citaId,))
     conn.commit()
     conn.close()
-    
+
     return {"message": "Cita eliminada exitosamente"}
 
 # Validaciones
@@ -74,7 +74,7 @@ def validarEstudiante(estudianteId: int, cur):
         raise ValueError(f"Estudiante con ID {estudianteId} no existe.")
 
 def validarEspecialidad(especialidadId: int, cur):
-    cur.execute("SELECT id FROM especialidades WHERE id = %s", (especialidadId,))  
+    cur.execute("SELECT id FROM especialidades WHERE id = %s", (especialidadId,))
     if cur.fetchone() is None:
         raise ValueError(f"Especialidad con ID {especialidadId} no existe.")
 
@@ -87,7 +87,7 @@ def validarFechaHora(fecha, hora, medicoId, cur):
     cur.execute("SELECT id FROM citas WHERE fecha = %s AND hora = %s AND medico_id =%s", (fecha, hora, medicoId))
     if cur.fetchone() is not None:
         raise ValueError(f"Ya existe una cita programada para {fecha} a las {hora} para el medico seleccionado.")
-    
+
 def validarEstado(estado: str):
     estados_validos = ["pendiente", "confirmada", "cancelada"]
     if estado not in estados_validos:

@@ -1,17 +1,12 @@
 <template>
-  <div
-    class="card shadow-sm w-100"
-    style="background-color: var(--color-surface); border-color: var(--color-border);"
-  >
+  <div class="card shadow-sm w-100 card-surface">
     <div class="card-body d-flex align-items-center">
-      <!-- Badge de ícono fijo por especialidad -->
       <div class="icon-badge me-3" aria-hidden="true">
     <i :class="iconClass" aria-hidden="true"></i>
       </div>
 
       <div class="flex-grow-1">
-        <h6 class="card-title mb-0 fw-semibold" 
-          style="color: var(--color-text); text-overflow: ellipsis;">
+        <h6 class="card-title mb-0 fw-semibold card-title-text">
           {{ nombre }}
         </h6>
       </div>
@@ -59,6 +54,8 @@ const iconClass = computed(() => {
 </script>
 
 <style scoped>
+.card-surface{ background-color: var(--color-surface); border-color: var(--color-border); }
+.card-title-text{ color: var(--color-text); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 .icon-badge {
   width: 44px;
   height: 44px;

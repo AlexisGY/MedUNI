@@ -1,21 +1,19 @@
-// Mapeos y utilidades para Especialidades
-
 export const ICONS_BY_ID = {
-  1: 'bi bi-scissors',                 // Cirugía General
-  2: 'bi bi-heart-pulse-fill',         // Cardiología
-  3: 'bi bi-gender-female',            // Ginecología
-  4: 'bi bi-gender-male',              // Urología
-  5: 'bi bi-eye-fill',                 // Oftalmología
-  6: 'bi bi-capsule',                  // Endocrinología
-  7: 'bi bi-chat-square-heart-fill',   // Psicología 
-  8: 'bi bi-ear-fill',                 // Otorrinolaringología
-  9: 'bi bi-emoji-laughing-fill',      // Odontología 
-  10: 'bi bi-person-hearts',           // Psiquiatría
-  11: 'bi bi-flask-fill',              // Laboratorio Clínico
-  12: 'bi bi-lungs-fill',              // Neumología 
-  13: 'bi bi-hospital-fill',           // Medicina Interna/Familia/General 
-  14: 'bi bi-fork-knife',              // Nutrición
-  15: 'bi bi-soundwave'                // Ecografía
+  1: 'bi bi-scissors',
+  2: 'bi bi-heart-pulse-fill',
+  3: 'bi bi-gender-female',
+  4: 'bi bi-gender-male',
+  5: 'bi bi-eye-fill',
+  6: 'bi bi-capsule',
+  7: 'bi bi-chat-square-heart-fill',
+  8: 'bi bi-ear-fill',
+  9: 'bi bi-emoji-laughing-fill',
+  10: 'bi bi-person-hearts',
+  11: 'bi bi-flask-fill',
+  12: 'bi bi-lungs-fill',
+  13: 'bi bi-hospital-fill',
+  14: 'bi bi-fork-knife',
+  15: 'bi bi-soundwave'
 };
 
 export const NOMBRES_BY_ID = {
@@ -45,13 +43,11 @@ export function getEspecialidadNombreById(id) {
 }
 
 export function getEspecialidadImageById(id) {
-  // Carga todas las imágenes disponibles y retorna la URL (string) directamente
   const images = import.meta.glob('/src/assets/especialidades/*.{png,jpg,jpeg,svg}', {
     eager: true,
     import: 'default',
   });
 
-  // Probar con varias extensiones en orden de preferencia
   const candidates = [
     `/src/assets/especialidades/${id}.png`,
     `/src/assets/especialidades/${id}.jpg`,
@@ -63,6 +59,16 @@ export function getEspecialidadImageById(id) {
     if (images[key]) return images[key];
   }
 
-  // Fallback genérico
-  return images['/src/assets/especialidades/fallback.png'] || '';
+  const fallbackSvg = '/src/assets/especialidades/fallback.svg';
+  if (images[fallbackSvg]) return images[fallbackSvg];
+  return '';
+}
+export function getEspecialidadMetaById(id) {
+  const n = Number(id);
+  return {
+    id: n,
+    nombre: getEspecialidadNombreById(n),
+    icono: getEspecialidadIconClassById(n),
+    imagen: getEspecialidadImageById(n),
+  };
 }

@@ -1,8 +1,8 @@
 <!-- components/SearchFiltro.vue -->
 <template>
-  <div class="mx-auto max-w-[900px]">
+  <div class="container search-wrap">
     <div class="text-center">
-      <div class="d-flex justify-content-center align-items-center mb-2" style="gap: 1rem;">
+      <div class="d-flex justify-content-center align-items-center mb-2 gap-3">
         <input
           :placeholder="props.searchPlaceholder"
           class="form-control w-auto"
@@ -43,6 +43,7 @@ defineEmits<{
 </script>
 
 <style scoped>
+.search-wrap{ max-width: 900px; }
 .form-control:focus, .form-select:focus {
   box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
   outline: none;

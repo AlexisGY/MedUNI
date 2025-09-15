@@ -16,3 +16,5 @@ main { min-height: calc(100vh - 64px); }
 
 /* Elimina restos del scaffold */
 #app { isolation: isolate; }
+
+/* Nota: sin overrides globales de hover de Bootstrap; usamos estilos por componente cuando sea necesario. */

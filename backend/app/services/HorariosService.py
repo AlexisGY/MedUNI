@@ -20,9 +20,14 @@ def genHorarios(dia: date, medicoId: int):
         AND me.id = %s"""
     cursor.execute(query, (dia, medicoId))
     horas_limte = cursor.fetchall()
+
+    cursor.close()
+    if not horas_limte:
+        conn.close()
+        return []
+
     hora_inicio = horas_limte[0][0]
     hora_final = horas_limte[0][1]
-    cursor.close()
     #Por ahora se manejará una duración de cita de 30 minutos.
 
 
