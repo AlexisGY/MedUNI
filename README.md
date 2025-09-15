@@ -157,7 +157,7 @@ docker-compose.yml
 
 - **Dump no aplicado**  
   `dump.sql` solo se ejecuta al iniciar un volumen vacío.  
-  Si ya existe `./data/db`, elimínalo (⚠️ cuidado, perderás datos).  
+  Si ya existe `./data/db`, elimínalo (cuidado, perderás datos).  
 
 ---
 
