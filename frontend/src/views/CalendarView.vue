@@ -41,7 +41,6 @@ onMounted(async () => {
   }
 });
 
-console.log(estudianteDatos)
  // ID del estudiante logueado
 
 dayjs.extend(isoWeek);
@@ -134,7 +133,7 @@ function handleCancelCita(citaId) {
           :class="{
             'bg-light text-muted': isOtherMonth(d),
             'border-2 border-primary': isSameDay(d, state.selected),
-            'bg-gray-200': isDayReserved(d) // Clase para aplicar a los días reservados
+            'bg-gray-200': isDayReserved(d)
           }"
           @click="state.selected = d"
         >

@@ -12,10 +12,10 @@ const onLogout = async () => {
 </script>
 
 <template>
-  <nav v-if="route.path !== '/login'" class="navbar navbar-expand-lg" style="background:#7b0000">
+  <nav v-if="route.path !== '/login'" class="navbar navbar-expand-lg nav-primary">
     <div class="container">
       <RouterLink class="navbar-brand text-white fw-semibold d-flex align-items-center gap-2" to="/">
-        <img :src="logoBlanco" alt="UNI" style="height:48px;width:auto;" />
+  <img :src="logoBlanco" alt="UNI" class="brand-img" />
         MedUNI
       </RouterLink>
       <div class="collapse navbar-collapse show">
@@ -28,3 +28,8 @@ const onLogout = async () => {
   </nav>
   <main class="container py-4"><RouterView /></main>
 </template>
+
+<style scoped>
+.nav-primary{ background: #7b0000; }
+.brand-img{ height:48px; width:auto; }
+</style>

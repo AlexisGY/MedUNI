@@ -1,5 +1,5 @@
 <template>
-  <section class="container" style="max-width:900px">
+  <section class="container container-900">
     <h2 class="mb-3">Reservar cita</h2>
 
     <div class="row g-3 align-items-end">
@@ -49,3 +49,7 @@ async function cargar() {
 }
 function reservar(hora) { alert(`Reserva creada: ${esp.value} el ${fecha.value} a las ${hora}`) }
 </script>
+
+<style scoped>
+.container-900{ max-width: 900px; }
+</style>

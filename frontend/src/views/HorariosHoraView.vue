@@ -1,6 +1,6 @@
 <!-- views/HorariosHoraView.vue -->
 <template>
-  <div class="d-flex flex-column min-vh-100" style="background: var(--color-surface); color: var(--color-text);">
+  <div class="d-flex flex-column min-vh-100 page-bg">
     <!-- Especialidad y doctor actual -->
   <section class="py-3 rounded-3 header-band">
       <div class="container d-flex justify-content-between align-items-center">
@@ -14,7 +14,7 @@
 
         <div class="text-center">
           <h2 class="h6 fw-bold mb-1">{{ especialidadNombreDisplay }}</h2>
-          <p class="mb-0 small" style="opacity:.95;">
+          <p class="mb-0 small text-soft">
             {{ currentDoctor?.nombre }} {{ currentDoctor?.apellido }}
           </p>
         </div>
@@ -87,7 +87,7 @@
       <template #header="{ close }">
         <div class="modal-title-bar">
           <h2 class="m-0 h6">Reserva de cita</h2>
-          <button type="button" class="icon-btn" @click="close" aria-label="Cerrar" style="color: var(--color-surface);">
+          <button type="button" class="icon-btn icon-light" @click="close" aria-label="Cerrar">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
@@ -284,6 +284,8 @@ async function confirmarCita() {
 </script>
 
 <style scoped>
+.page-bg{ background: var(--color-surface); color: var(--color-text); }
+.text-soft{ opacity:.95; }
 .header-band{ background: var(--color-primary); color: var(--color-surface); }
 .btn-nav{
   background: var(--color-surface);
@@ -372,6 +374,7 @@ async function confirmarCita() {
 .modal-title-bar .icon-btn{
   color: var(--color-surface);
 }
+.icon-light{ color: var(--color-surface); }
 
 /* Botón confirmar más redondeado */
 .confirm-modal-content .btn-primary-uni{
