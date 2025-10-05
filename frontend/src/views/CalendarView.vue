@@ -28,8 +28,6 @@ onMounted(async () => {
    const username = localStorage.getItem('user');
     estudianteDatos.value = await fetchUsuario(username);
     citaStore.setEstudiante(estudianteDatos.value.id) // Llamar al API
-    // Si tu backend NO envía icono, podrías mapear un ícono por defecto aquí.
-    // ejemplo: especialidades.value = especialidades.value.map(e => ({ ...e, icon: "🦷" }));
 
     citas.value = await fetchCitasPorEstudiante(estudianteDatos.value.id);
 
