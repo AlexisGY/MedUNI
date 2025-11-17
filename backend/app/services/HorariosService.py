@@ -19,15 +19,15 @@ def genHorarios(dia: date, medicoId: int):
         WHERE EXTRACT(ISODOW FROM %s::date) = de.dia_semana
         AND me.id = %s"""
     cursor.execute(query, (dia, medicoId))
-    horas_limte = cursor.fetchall()
+    horas_limite = cursor.fetchall()
 
     cursor.close()
-    if not horas_limte:
+    if not horas_limite:
         conn.close()
         return []
 
-    hora_inicio = horas_limte[0][0]
-    hora_final = horas_limte[0][1]
+    hora_inicio = horas_limite[0][0]
+    hora_final = horas_limite[0][1]
     #Por ahora se manejará una duración de cita de 30 minutos.
 
 
