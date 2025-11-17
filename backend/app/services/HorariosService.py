@@ -37,8 +37,8 @@ def genHorarios(dia: date, medicoId: int):
                 WITH horarios AS (
             SELECT
                 generate_series(
-                    ('2025-09-05 ' || %s)::timestamp,
-                    ('2025-09-05 ' || %s)::timestamp - interval '30 minutes',
+                    (%s::date + %s::time)::timestamp,
+                    (%s::date + %s::time)::timestamp - interval '30 minutes',
                     interval '30 minutes'
                 ) AS hora_inicio
         )
@@ -56,7 +56,7 @@ def genHorarios(dia: date, medicoId: int):
             AND c.hora = hora_inicio::time  -- Verificamos si ya existe una cita a esa hora
         ORDER BY hora_inicio;
     """
-    cursor.execute(query, (hora_inicio, hora_final, medicoId, dia))
+    cursor.execute(query, (dia, hora_inicio, dia, hora_final, medicoId, dia))
     horarios = cursor.fetchall()
     cursor.close()
     conn.close()
