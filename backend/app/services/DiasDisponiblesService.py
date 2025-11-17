@@ -13,8 +13,8 @@ def listarDiasSemana(especialidadId, semanas=1):
 
     # Calcular rango de fechas
     hoy = date.today()
-    inicio_semana = hoy # lunes de esta semana
-    fin_semana = inicio_semana + timedelta(days=7*semanas - 1)
+    inicio_semana = hoy - timedelta(days=hoy.weekday())  # lunes de esta semana
+    fin_semana = inicio_semana + timedelta(days=7 * semanas - 1)
 
     query = """
             WITH rango AS (
